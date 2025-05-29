@@ -1,0 +1,162 @@
+ion-footer ion-toolbar {
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+ion-footer ion-toolbar ion-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+ion-footer ion-toolbar ion-grid ion-button {
+  --padding-start: 0.75rem;
+  --padding-end: 0.73rem;
+   
+}
+
+ion-footer ion-toolbar ion-grid ion-button ion-icon {
+  font-size: 1.5rem;
+  color: #555;
+  
+}
+
+.header {
+  position: absolute;
+ background-color: #0426ac; 
+  height: 300px;
+  margin: 0px;
+  width: 100%;
+}
+
+ion-list {
+  background: white;
+  margin: 180px 0px 0px 0px;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  height: auto;
+}
+
+.imgVallejito {
+  height: 90px;
+  width: 90px;
+  margin: 20px auto;
+  display: block;
+}
+
+.ptit {
+  font-size: 25px;
+  text-align: center;
+  font-weight: 900;
+  font-style: italic;
+  color: white;
+  margin-top: 90px;
+}
+
+.lbl {
+  font-size: 20px;
+  font-weight: 600;
+  margin-left: 15px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.ion-input {
+  margin-top: 0px;
+  font-size: 15px;
+  font-weight: 600;
+  --border-color: none;
+  border: solid 1px black;
+  background: rgba(207, 207, 207, 0.484);
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.iicon {
+  font-size: 30px;
+}
+
+.ion-button {
+  --box-shadow: none;
+  --border-radius: 20px;
+  text-transform: none;
+  font-weight: 600;
+  font-size: 21px;
+  height: 55px;
+  width: 90%;
+  margin: 20px auto 0;
+}
+
+.creac {
+  color: #4a6fff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.pcreac {
+  margin-top: 30px;
+  margin-left: 80px;
+}
+
+.ppcreac {
+  margin-left: 55px;
+}
+
+.resco {
+  color: #4a6fff;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 0px;
+}
+
+.pres {
+  margin-top: 0px;
+  margin-left: 85px;
+}
+
+.imgper{
+  height: 100px;
+  width: 100px;
+  margin: auto;
+  margin-bottom: 5px;
+  background-color: #555;
+  border-radius: 50px;
+  text-align: center;
+ 
+}
+.imgper .foto{
+  color: #ddd;
+  margin-top: 40px;
+  text-align: center;
+  font-size: 20px;
+}
+
+.table-container {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  max-height: 60vh; /* Set the maximum height of the container /
+  overflow-y: auto; / Enable vertical scrolling /
+  padding-right: 10px; / Add some padding on the right to create space for the scrollbar */
+}
+
+.tit {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.sub {
+  text-align: center;
+  padding: 10px 0;
+}
+.nom {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+}

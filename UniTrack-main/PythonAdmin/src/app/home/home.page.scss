@@ -1,0 +1,104 @@
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+
+  .imgper{
+    height: 100px;
+    width: 100px;
+    margin: auto;
+    margin-bottom: 10px;
+    background-color: #555;
+    border-radius: 50px;
+    text-align: center;
+   
+  }
+  .imgper .foto{
+    color: #ddd;
+    margin-top: 40px;
+    text-align: center;
+    font-size: 20px;
+  }
+
+  .nom {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 2px;
+  }
+}
+
+.table-container {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.tit {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.sub {
+  text-align: center;
+  padding: 10px 0;
+}
+
+ion-item-divider {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+
+  ion-icon {
+    margin-right: 10px;
+  }
+}
+
+.welcome {
+  font-family: Arial, sans-serif;
+  font-size: 36px;
+  font-weight: bold;
+  text-align: center;
+  color: #333333;
+  margin-top: 50px;
+  margin-bottom: 30px;
+}
+
+.report {
+  font-family: Arial, sans-serif;
+  font-size: 25px;
+  font-weight: bold;
+  text-align: center;
+  color: #333333;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+ion-menu {
+  width: 180px; 
+}
+
+ion-content {
+  --padding-start: 10px; 
+  --padding-end: 10px; 
+}
+
+ion-item-divider {
+  --padding-start: 10px; 
+  --padding-end: 10px; 
+}
+
+.letr {
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.centro {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px; 
+}

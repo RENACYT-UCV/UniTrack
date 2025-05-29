@@ -1,0 +1,34 @@
+<ion-content class="container" [fullscreen]="true">
+  
+  <div class="header">
+    <div class="form-container">
+      
+      <ion-list lines="none" class="ion-text-center login-form">
+
+        <ion-button class="btn-close" fill="clear" routerLink="/login">
+          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+        </ion-button>
+        <ion-title class="tit">¿Quieres cambiar tu</ion-title>
+        <ion-title class="tit">contraseña?</ion-title>
+
+        <p class="wel">Por favor, ingrese su correo. Se enviará un token de verificación para el cambio de contraseña.
+        </p>
+
+        <ion-item>
+          <ion-label>Correo universitario:</ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-input type="email" fill="outline" class="ion-input" [(ngModel)]="email" placeholder="Ingresa tu correo">
+          </ion-input>
+        </ion-item>
+
+
+        <ion-item class="ion-align-items-center">
+          <ion-button type="submit" class="ion-button" (click)="sendVerificationCode()">Enviar</ion-button>
+        </ion-item>
+
+      </ion-list>
+    </div>
+  </div>
+</ion-content>

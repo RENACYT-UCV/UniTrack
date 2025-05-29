@@ -1,0 +1,137 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+
+    <ion-button type="sumit" class="titicon" routerLink="/login" >SALIR</ion-button>
+    <ion-title class="tit">Registro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item style="background: rgb(228, 200, 12);">
+    <form (ngSubmit)="onSubmit()">
+      <ion-item lines="none">
+        <ion-label type="lbl">Nombres:</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          type="text"
+          [(ngModel)]="nombres"
+          name="nombres"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label type="lbl">Apellidos:</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          type="text"
+          [(ngModel)]="apellidos"
+          name="apellidos"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label type="lbl">Correo universitario:</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          type="email"
+          [(ngModel)]="correo"
+          name="correo"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label type="lbl">Código de estudiante:</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          type="text"
+          [(ngModel)]="codigo_estudiante"
+          name="codigo_estudiante"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label type="lbl">Correo del apoderado:</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          type="text"
+          [(ngModel)]="correoA"
+          name="correoA"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label type="lbl">carrera:</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          type="text"
+          [(ngModel)]="carrera"
+          name="carrera"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label type="lbl">Ciclo:</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          type="text"
+          [(ngModel)]="ciclo"
+          name="ciclo"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label type="lbl">Edad:</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          type="text"
+          [(ngModel)]="edad"
+          name="edad"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label type="lbl">Sexo:</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          type="text"
+          [(ngModel)]="sexo"
+          name="sexo"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label type="lbl">Contraseña:</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          type="password"
+          [(ngModel)]="contrasena"
+          name="contrasena"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item class="ion-align-items-center">
+        <ion-button type="submit" class="boton">Registrar</ion-button>
+      </ion-item>
+    </form>
+  </ion-item>
+</ion-content>

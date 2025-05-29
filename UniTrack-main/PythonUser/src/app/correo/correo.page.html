@@ -1,0 +1,28 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-button type="sumit" class="titicon" routerLink="/login" >SALIR</ion-button>
+    <ion-title class="tit">¿Quieres cambiar tu contraseña?</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-list class="ion-padding">
+    <ion-item lines="none">
+      <ion-label class="lbl lblmen">
+        Por favor ingrese su correo. Se enviará un token de verificación para el cambio de contraseña.
+      </ion-label>
+    </ion-item>
+    <div>
+      <ion-item lines="none" class="icorreo">
+        <ion-label class="lbl" >Correo:</ion-label>
+      </ion-item>
+      <ion-item lines="none" class="iinp">
+        <ion-input type="text" [(ngModel)]="email" class="inp" placeholder="Ingrese su correo electrónico">
+        
+        </ion-input>
+      </ion-item>
+    </div>
+    <ion-item lines="none">
+      <ion-button class="boton" (click)="sendVerificationCode()"> Enviar </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

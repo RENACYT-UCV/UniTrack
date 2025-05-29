@@ -1,0 +1,109 @@
+.header {
+    position: absolute;
+   background-color: #0426ac;
+    height: 300px;
+    margin: 0px;
+    width: 100%;
+
+  }
+  
+  ion-list {
+    background: white;
+    margin: 180px 0px 0px 0px;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    height: auto;
+  }
+  
+  .wel {
+    color: #4a6fff;
+    font-size: 35px;
+    text-transform: none;
+    font-weight: 550;
+    margin-left: 15px;
+    margin-bottom: 5px;
+  }
+  .well {
+    color: #4a6fff;
+    font-size: 35px;
+    text-transform: none;
+    font-weight: 550;
+  }
+
+  .imgVallejito {
+    height: 90px;
+    width: 90px;
+    margin: 20px auto;
+    display: block;
+  }
+  
+  .ptit {
+    font-size: 25px;
+    text-align: center;
+    font-weight: 900;
+    font-style: italic;
+    color: white;
+    margin-top: 90px;
+  }
+
+  .lbl{
+    font-size: 20px;
+    font-weight: 600;
+    margin-left: 15px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .ion-input {
+    margin-top: 0px;
+    font-size: 15px;
+    font-weight: 600;
+    --border-color: none;
+    border: solid 1px black;
+    background: rgba(207, 207, 207, 0.484);
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .iicon{
+    font-size: 30px;
+  }
+  
+  .ion-button {
+    --box-shadow: none;
+    --border-radius: 20px;
+    text-transform: none;
+    font-weight: 600;
+    font-size: 21px;
+    height: 55px;
+    width: 90%;
+    margin: 20px auto 0;
+  }
+  
+  .creac {
+    color: #4a6fff;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .pcreac{
+    margin-top: 30px;
+    margin-left: 80px;
+  }
+
+  .ppcreac{
+    margin-left: 55px;
+  }
+
+  .resco{
+    color: #4a6fff;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 0px;
+  }
+
+  .pres{
+    margin-top: 0px;
+    margin-left: 85px;  
+  }

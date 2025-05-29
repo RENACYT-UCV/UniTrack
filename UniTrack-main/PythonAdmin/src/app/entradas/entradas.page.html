@@ -1,0 +1,68 @@
+<ion-content>
+  <ion-split-pane contentId="main-content">
+
+    <ion-menu contentId="main-content" type="overlay" class="baby-blue-menu">
+      <ion-header>
+        <ion-toolbar class="baby-blue-toolbar">
+          <ion-title class="letr">MENÚ DEL ADMINISTRADOR</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+          <ion-item-divider routerLink="/home" class="baby-blue-item-divider">
+            <ion-label>Home</ion-label>
+          </ion-item-divider>
+          <ion-item-divider routerLink="/entradas" class="baby-blue-item-divider">
+            <ion-label>Reporte de entradas</ion-label>
+          </ion-item-divider>
+          <ion-item-divider routerLink="/salidas" class="baby-blue-item-divider">
+            <ion-label>Reporte de salidas</ion-label>
+          </ion-item-divider>
+          <ion-item-divider routerLink="/login" class="baby-blue-item-divider">
+            <ion-label>Cerrar sesión</ion-label>
+          </ion-item-divider>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+
+    <div class="ion-page" id="main-content">
+      <ion-item lines="none">
+        <ion-label class="welcome">¡BIENVENIDO!</ion-label>
+      </ion-item>
+
+      <ion-content class="ion-padding">
+        <ion-item class="ionit" lines="none">
+        <div class="user-info">
+          <div class="imgper"> <ion-label class="foto"> Foto</ion-label> </div>
+          <ion-label class="nom">{{ nombrecompleto }}</ion-label>
+        </div>
+      </ion-item>
+
+        <ion-item lines="none">
+          <ion-label class="report">REPORTES DE ENTRADA</ion-label>
+        </ion-item>
+
+        <div class="table-container">
+          <ion-grid>
+            <ion-row>
+              <ion-col class="tit" size="2"><strong>ID</strong></ion-col>
+              <ion-col class="tit" size="2"><strong>Usuario</strong></ion-col>
+              <ion-col class="tit" size="2"><strong>Correo</strong></ion-col>
+              <ion-col class="tit" size="2"><strong>Fecha</strong></ion-col>
+              <ion-col class="tit" size="2"><strong>Hora</strong></ion-col>
+              <ion-col class="tit" size="2"><strong>Modo</strong></ion-col>
+            </ion-row>
+            <ion-row *ngFor="let registro of reportes">
+              <ion-col class="sub" size="2">{{ registro.idReporte }}</ion-col>
+              <ion-col class="sub" size="2">{{ registro.nombre }}</ion-col>
+              <ion-col class="sub" size="2">{{ registro.email }}</ion-col>
+              <ion-col class="sub" size="2">{{ registro.fecha }}</ion-col>
+              <ion-col class="sub" size="2">{{ registro.hora }}</ion-col>
+              <ion-col class="sub" size="2">{{ registro.modo }}</ion-col>
+            </ion-row>        
+          </ion-grid>
+        </div>
+      </ion-content>
+    </div>
+  </ion-split-pane>
+</ion-content>

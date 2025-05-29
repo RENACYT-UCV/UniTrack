@@ -1,0 +1,61 @@
+<ion-content>
+  <ion-split-pane contentId="main-content">
+
+    <ion-menu contentId="main-content" type="overlay" class="baby-blue-menu">
+
+      <ion-header>
+        <ion-toolbar class="baby-blue-toolbar">
+          <ion-title class="letr">MENÚ DEL ADMINISTRADOR</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content>
+        <ion-list>
+          <ion-item-divider routerLink="/home" class="baby-blue-item-divider">
+            <ion-label>Home</ion-label>
+          </ion-item-divider>
+          <ion-item-divider routerLink="/entradas" class="baby-blue-item-divider">
+            <ion-label>Reporte de entradas</ion-label>
+          </ion-item-divider>
+          <ion-item-divider routerLink="/salidas" class="baby-blue-item-divider">
+            <ion-label>Reporte de salidas</ion-label>
+          </ion-item-divider>
+          <ion-item-divider routerLink="/login" class="baby-blue-item-divider">
+            <ion-label>Cerrar sesión</ion-label>
+          </ion-item-divider>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+
+    
+    <div id="main-content">
+      <div class="welcome">¡BIENVENIDO!</div>
+      
+      <div class="user-info">
+        <ion-item class="ionit" lines="none">
+         <div class="imgper"> <ion-label class="foto"> Foto</ion-label> </div>
+         <ion-label class="nom">{{ nombrecompleto }}</ion-label>
+        </ion-item>        
+       
+      </div>
+      <div class="table-container">
+        <div class="tit">Código de Administrador:</div>
+        <div class="sub">{{codigo}}</div>
+        <div class="tit">Correo universitario:</div>
+        <div class="sub">{{correo}}</div>
+        <div class="tit">Edad:</div>
+        <div class="sub">{{edad}}</div>
+        <div class="tit">Sexo:</div>
+        <div class="sub">{{sexo}}</div>
+      </div> 
+
+      <div class="centro">
+        <ion-button class="centro" (click)="verifyQR()">Verificar QR</ion-button>
+      </div>
+      
+    </div>
+  </ion-split-pane>
+
+
+
+</ion-content>

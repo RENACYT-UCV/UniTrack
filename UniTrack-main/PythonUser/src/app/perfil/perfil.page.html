@@ -1,0 +1,62 @@
+<ion-content>
+  <div class="header">
+    
+    <p class="ptit">Universidad César Vallejo</p>
+  </div>
+
+  <ion-list lines="none" class="ion-text-center">
+     
+    <ion-item class="ionit" lines="none">
+      <div class="imgper"> <ion-label class="foto"> Foto</ion-label> </div>
+     
+     <ion-label class="nom">{{ nombrecompleto }}</ion-label>
+    </ion-item>
+      
+    <div class="table-container">
+      <div class="tit">Código de estudiante:</div>
+      <div class="sub">{{codigo_estudiante}}</div>
+      <div class="tit">Carrera:</div>
+      <div class="sub">{{carreraE}}</div>
+      <div class="tit">Ciclo:</div>
+      <div class="sub">{{cicloE}}</div>
+      <div class="tit">Correo universitario:</div>
+      <div class="sub">{{correoE}}</div>
+      <div class="tit">Correo del apoderado:</div>
+      <div class="sub">{{correoA}}</div>
+      <div class="tit">Edad:</div>
+      <div class="sub">{{edadE}}</div>
+      <div class="tit">Sexo:</div>
+      <div class="sub">{{sexoE}}</div>
+    </div> 
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="3">
+          <ion-button color="primary" fill="clear" routerLink="/perfil">
+            <ion-label> Perfil </ion-label>
+          </ion-button>
+        </ion-col>
+
+        <ion-col size="3">
+          <ion-button color="primary" fill="clear" routerLink="/home">
+            <ion-label> QR </ion-label>
+          </ion-button>
+        </ion-col>
+
+        <ion-col size="3">
+          <ion-button color="primary" fill="clear" routerLink="/historial">
+            <ion-label> historial </ion-label>
+          </ion-button>
+        </ion-col>
+
+        <ion-col size="3">
+          <ion-button color="primary" fill="clear" routerLink="/login">
+            <ion-label> salir </ion-label>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>
