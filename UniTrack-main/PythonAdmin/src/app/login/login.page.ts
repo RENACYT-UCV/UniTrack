@@ -10,6 +10,7 @@ export class LoginPage implements OnInit {
 
   correo: string=''; 
  contrasena: string =''; 
+ showPassword: boolean = false;
   constructor(private userService: UserService, private router: Router) { }
   login(){
     this.userService.loginUser(this.correo, this.contrasena).subscribe(
@@ -34,6 +35,10 @@ export class LoginPage implements OnInit {
     );
   }
   ngOnInit() {
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
   }
 
 }
