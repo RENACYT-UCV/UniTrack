@@ -1,4 +1,3 @@
-
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -10,8 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 // Incluir el archivo de configuración de la conexión a la base de datos
 include_once 'config.php';
-
-
 
 function reportes()
 {
@@ -203,7 +200,7 @@ function loginUser($correo, $contrasena)
     global $conn;
 
     try {
-        // Preparar la consulta SQL para obtener el usuario por correo
+
         $sql = "SELECT idAdmin, nombres, apellidos, correo, codigo_admin, contrasena, edad, sexo FROM administrador WHERE correo = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $correo);
@@ -213,6 +210,7 @@ function loginUser($correo, $contrasena)
         if ($result->num_rows > 0) {
             // Verificar la contraseña
             $user = $result->fetch_assoc();
+
             if (password_verify($contrasena, $user['contrasena'])) {
                 unset($user['contrasena']); // No devolver la contraseña hash en la respuesta
                 return json_encode($user);
@@ -244,35 +242,40 @@ try {
         }
     } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = json_decode(file_get_contents("php://input"), true);
-
-        // Validaciones básicas
-        if (
-            empty($data['nombres']) ||
-            empty($data['apellidos']) ||
-            empty($data['correo']) ||
-            empty($data['codigo_admin']) ||
-            empty($data['contrasena']) ||
-            empty($data['edad']) ||
-            empty($data['sexo'])
-        ) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Todos los campos son obligatorios']);
-            exit();
-        }
-        if (!preg_match('/@ucvvirtual\.edu\.pe$/', $data['correo'])) {
-            http_response_code(400);
-            echo json_encode(['error' => 'El correo debe ser de la universidad']);
-            exit();
-        }
-        if (strlen($data['contrasena']) < 6) {
-            http_response_code(400);
-            echo json_encode(['error' => 'La contraseña debe tener al menos 6 caracteres']);
-            exit();
-        }
-
+        
         if (isset($data['action']) && $data['action'] === 'login') {
+            // Validación solo para login
+            if (empty($data['correo']) || empty($data['contrasena'])) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Correo y contraseña son obligatorios']);
+                exit();
+            }
             echo loginUser($data['correo'], $data['contrasena']);
         } else {
+            // Validación para registro
+            if (
+                empty($data['nombres']) ||
+                empty($data['apellidos']) ||
+                empty($data['correo']) ||
+                empty($data['codigo_admin']) ||
+                empty($data['contrasena']) ||
+                empty($data['edad']) ||
+                empty($data['sexo'])
+            ) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Todos los campos son obligatorios']);
+                exit();
+            }
+            if (!preg_match('/@ucvvirtual\.edu\.pe$/', $data['correo'])) {
+                http_response_code(400);
+                echo json_encode(['error' => 'El correo debe ser de la universidad']);
+                exit();
+            }
+            if (strlen($data['contrasena']) < 6) {
+                http_response_code(400);
+                echo json_encode(['error' => 'La contraseña debe tener al menos 6 caracteres']);
+                exit();
+            }
             echo createAdmin($data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_admin'], $data['contrasena'], $data['edad'], $data['sexo']);
         }
     } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
