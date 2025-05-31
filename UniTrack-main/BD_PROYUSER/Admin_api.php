@@ -230,67 +230,75 @@ function loginUser($correo, $contrasena)
 
 // Verificar si la solicitud es un método GET
 
-
 try {
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        if (isset($_GET['id'])) {
-            echo getUserById($_GET['id']);
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'reportes') {
-            reportes();
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'salidas') {
-            reportesSalida();
-        } else {
-            echo getAllUsers();
-        }
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $data = json_decode(file_get_contents("php://input"), true);
-
-        // Validaciones básicas
-        if (
-            empty($data['nombres']) ||
-            empty($data['apellidos']) ||
-            empty($data['correo']) ||
-            empty($data['codigo_admin']) ||
-            empty($data['contrasena']) ||
-            empty($data['edad']) ||
-            empty($data['sexo'])
-        ) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Todos los campos son obligatorios']);
-            exit();
-        }
-        if (!preg_match('/@ucvvirtual\.edu\.pe$/', $data['correo'])) {
-            http_response_code(400);
-            echo json_encode(['error' => 'El correo debe ser de la universidad']);
-            exit();
-        }
-        if (strlen($data['contrasena']) < 6) {
-            http_response_code(400);
-            echo json_encode(['error' => 'La contraseña debe tener al menos 6 caracteres']);
-            exit();
-        }
-
-        if (isset($data['action']) && $data['action'] === 'login') {
-            echo loginUser($data['correo'], $data['contrasena']);
-        } else {
-            echo createAdmin($data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_admin'], $data['contrasena'], $data['edad'], $data['sexo']);
-        }
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-        $data = json_decode(file_get_contents("php://input"), true);
-        if (isset($data['id'])) {
-            echo updateUser($data['id'], $data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_estudiante']);
-        } else {
-            echo json_encode(array("error" => "ID de usuario no especificado para actualizar"));
-        }
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-        $data = json_decode(file_get_contents("php://input"), true);
-        if (isset($data['id'])) {
-            echo deleteUser($data['id']);
-        } else {
-            echo json_encode(array("error" => "ID de usuario no especificado para eliminar"));
-        }
+    switch ($_SERVER['REQUEST_METHOD']) {
+        case "GET":
+            if (isset($_GET['id'])) {
+                echo getUserById($_GET['id']);
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'reportes') {
+                reportes();
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'salidas') {
+                reportesSalida();
+            } else {
+               http_response_code(404);
+               echo json_encode(array("error" => "Ruta no encontrada"));
+            }
+            break;
+        case "POST":
+            $data = json_decode(file_get_contents("php://input"), true);
+            if (
+                empty($data['nombres']) ||
+                empty($data['apellidos']) ||
+                empty($data['correo']) ||
+                empty($data['codigo_admin']) ||
+                empty($data['contrasena']) ||
+                empty($data['edad']) ||
+                empty($data['sexo'])
+            ) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Todos los campos son obligatorios']);
+                exit();
+            }
+            if (!preg_match('/@ucvvirtual\.edu\.pe$/', $data['correo'])) {
+                http_response_code(400);
+                echo json_encode(['error' => 'El correo debe ser de la universidad']);
+                exit();
+            }
+            if (strlen($data['contrasena']) < 6) {
+                http_response_code(400);
+                echo json_encode(['error' => 'La contraseña debe tener al menos 6 caracteres']);
+                exit();
+            }
+    
+            if (isset($data['action']) && $data['action'] === 'login') {
+                echo loginUser($data['correo'], $data['contrasena']);
+            } else {
+                echo createAdmin($data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_admin'], $data['contrasena'], $data['edad'], $data['sexo']);
+            }
+            
+            break;
+        case "PUT":
+            $data = json_decode(file_get_contents("php://input"), true);
+            if (isset($data['id'])) {
+                echo updateUser($data['id'], $data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_estudiante']);
+            } else {
+                echo json_encode(array("error" => "ID de usuario no especificado para actualizar"));
+            }
+            break;
+        case "DELETE":
+            $data = json_decode(file_get_contents("php://input"), true);
+            if (isset($data['id'])) {
+                echo deleteUser($data['id']);
+            } else {
+                echo json_encode(array("error" => "ID de usuario no especificado para eliminar"));
+            }
+            break;
+        default:
+            http_response_code(405);
+            echo json_encode(array("error" => "Método no permitido"));
+            break;
     }
-} catch (Exception $e) {
+    } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(array("error" => $e->getMessage()));
 }
