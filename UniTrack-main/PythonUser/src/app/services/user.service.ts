@@ -46,7 +46,6 @@ export class UserService {
   // Establecer el usuario actual
   setCurrentUser(user: any) {
     this.currentUser = user;
-    console.log('Usuario establecido:', this.currentUser); 
   }
 
   // Obtener el usuario actual

@@ -3,18 +3,21 @@
     <div class="form-container">
       <ion-list lines="none" class="ion-text-center login-form">
 
-        <ion-button class="btn-close" fill="clear" routerLink="/login">
-          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-        </ion-button>
-
-        <p class="wel">Ingresa el token de verificación para el cambio de contraseña.</p>
-
+        <div class="close-title-row">
+          <ion-button class="btn-close" fill="clear" routerLink="/login">
+            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+          </ion-button>
+          <span class="tit">Ingresa el token de verificación para el cambio de contraseña.</span>
+          <span class="btn-close-placeholder"></span>
+        </div>
+        
         <ion-item>
           <ion-label>Token de seguridad:</ion-label>
         </ion-item>
 
         <ion-item>
-          <ion-input type="text" [(ngModel)]=" verificationCode" fill="outline" class="ion-input" placeholder="Ingresa tu token">
+          <ion-input type="text" [(ngModel)]=" verificationCode" fill="outline" class="ion-input"
+            placeholder="Ingresa tu token">
           </ion-input>
         </ion-item>
 

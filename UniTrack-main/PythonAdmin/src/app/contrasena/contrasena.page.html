@@ -3,24 +3,29 @@
     <div class="form-container">
       <ion-list lines="none" class="ion-text-center login-form">
 
-        <ion-button class="btn-close" fill="clear" routerLink="/login">
-          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-        </ion-button>
-
-        <p class="wel">Su contraseña debe de ser diferente que la anterior.</p>
+        <div class="close-title-row">
+          <ion-button class="btn-close" fill="clear" routerLink="/login">
+            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+          </ion-button>
+          <span class="tit">Ingrese Su Nueva Contraseña</span>
+          <span class="btn-close-placeholder"></span>
+        </div>
 
         <ion-item>
           <ion-label>Nueva contraseña:</ion-label>
         </ion-item>
 
         <ion-item>
-          <ion-input type="text" [(ngModel)]="newPassword" fill="outline" class="ion-input" placeholder="Ingresa tu nueva contraseña">
+          <ion-input type="text" [(ngModel)]="newPassword" fill="outline" class="ion-input"
+            placeholder="Ingresa tu nueva contraseña">
           </ion-input>
         </ion-item>
 
 
         <ion-item class="ion-align-items-center">
-          <ion-button type="submit" class="ion-button" routerLink="/login">Verificar</ion-button>
+          <ion-button  expand="block" color="primary" (click)="resetPassword()">
+            Cambiar contraseña
+          </ion-button>
         </ion-item>
 
       </ion-list>

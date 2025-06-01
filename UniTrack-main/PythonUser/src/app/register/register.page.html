@@ -82,16 +82,22 @@
       </ion-item>
 
       <ion-item lines="none">
-        <ion-label type="lbl">Ciclo:</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-input
-          type="text"
-          [(ngModel)]="ciclo"
-          name="ciclo"
-          required
-        ></ion-input>
-      </ion-item>
+  <ion-label type="lbl">Ciclo:</ion-label>
+</ion-item>
+<ion-item>
+  <ion-select [(ngModel)]="ciclo" name="ciclo" placeholder="Seleccione su ciclo" required>
+    <ion-select-option value="I">I</ion-select-option>
+    <ion-select-option value="II">II</ion-select-option>
+    <ion-select-option value="III">III</ion-select-option>
+    <ion-select-option value="IV">IV</ion-select-option>
+    <ion-select-option value="V">V</ion-select-option>
+    <ion-select-option value="VI">VI</ion-select-option>
+    <ion-select-option value="VII">VII</ion-select-option>
+    <ion-select-option value="VIII">VIII</ion-select-option>
+    <ion-select-option value="IX">IX</ion-select-option>
+    <ion-select-option value="X">X</ion-select-option>
+  </ion-select>
+</ion-item>
 
       <ion-item lines="none">
         <ion-label type="lbl">Edad:</ion-label>
@@ -106,16 +112,15 @@
       </ion-item>
 
       <ion-item lines="none">
-        <ion-label type="lbl">Sexo:</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-input
-          type="text"
-          [(ngModel)]="sexo"
-          name="sexo"
-          required
-        ></ion-input>
-      </ion-item>
+  <ion-label type="lbl">Sexo:</ion-label>
+</ion-item>
+<ion-item>
+  <ion-select [(ngModel)]="sexo" name="sexo" placeholder="Seleccione su sexo" required>
+    <ion-select-option value="Mujer">Mujer</ion-select-option>
+    <ion-select-option value="Hombre">Hombre</ion-select-option>
+    <ion-select-option value="Prefiero No Decirlo">Prefiero No Decirlo</ion-select-option>
+  </ion-select>
+</ion-item>
 
       <ion-item lines="none">
         <ion-label type="lbl">Contraseña:</ion-label>

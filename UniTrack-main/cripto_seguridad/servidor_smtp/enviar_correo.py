@@ -2,20 +2,30 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import logging
+import os
+import sys
+from dotenv import load_dotenv
+
+# Agrega el path del directorio padre para encontrar analisis_objetos
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from analisis_objetos.analisis import token, hash_blockchain
+
 logging.basicConfig(level=logging.DEBUG)
+
+# Cargar variables de entorno
+load_dotenv()
 
 def enviar_correo(token, hash_imagen, destinatario):
     mensaje = MIMEMultipart('alternative')
     mensaje['Subject'] = 'Información del Token y Hash de Imagen'
-    mensaje['From'] = 'ucvcrypto@gmail.com'
+    mensaje['From'] = os.environ.get('MAIL_DEFAULT_SENDER')
     mensaje['To'] = destinatario
 
     try:
-        servidor_smtp = 'smtp.gmail.com'
-        puerto_smtp = 587
-        remitente = 'ucvcrypto@gmail.com'
-        contrasena = 'ruvx eslt pdub pgon'  # Asegúrate de usar una contraseña segura
+        servidor_smtp = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
+        puerto_smtp = int(os.environ.get('SMTP_PORT', 587))
+        remitente = os.environ.get('MAIL_USERNAME')
+        contrasena = os.environ.get('MAIL_PASSWORD')  # Asegúrate de usar una contraseña segura
 
         servidor = smtplib.SMTP(servidor_smtp, puerto_smtp)
         servidor.starttls()
@@ -34,8 +44,8 @@ def enviar_correo(token, hash_imagen, destinatario):
         servidor.quit()
 
 # Ejemplo de uso
-token = token
-hash_imagen = hash_blockchain
+token = "token"
+hash_imagen = "hash_blockchain"
 destinatario = "mixie.brighit01@gmail.com"
 
 enviar_correo(token, hash_imagen, destinatario)

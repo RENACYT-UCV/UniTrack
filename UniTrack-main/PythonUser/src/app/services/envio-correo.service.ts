@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NavController } from '@ionic/angular';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EnvioCorreoService {
-  private apiUrl = 'http://localhost/BD_PROYUSER/correo.php'; // URL de tu API
+  private apiUrl = environment.correoApiUrl; // URL de tu API
   public currentUser: any= null; 
 
   constructor(private http: HttpClient, private navCtrl: NavController) { } 

@@ -4,7 +4,11 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost/BD_PROYUSER/Admin_api.php'
+  apiUrl: 'http://localhost/BD_PROYUSER/Admin_api.php',
+  //apiUrl: 'http://192.168.18.4/BD_PROYUSER/Admin_api.php',
+  correoApiUrl: 'http://localhost/BD_PROYUSER/correo.php',
+  //correoApiUrl: 'http://192.168.18.4/BD_PROYUSER/correo.php'
+  flaskUrl: 'http://localhost:5000'
 };
 
 /*

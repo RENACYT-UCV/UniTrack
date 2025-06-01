@@ -20,6 +20,13 @@ $port = isset($_ENV['DB_PORT']) ? $_ENV['DB_PORT'] : 3306; // usa 3306 por defec
 $conn = new mysqli($host, $user, $pass, $dbname, $port);
 
 if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
+  header('Content-Type: application/json');
+  http_response_code(500);
+  echo json_encode([
+    "success" => false,
+    "error" => "Error de conexión a la base de datos"
+    // "details" => $conn->connect_error // Solo para desarrollo, nunca en producción
+  ]);
+  exit();
 }
 

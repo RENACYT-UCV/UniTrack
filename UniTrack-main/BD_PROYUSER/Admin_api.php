@@ -1,6 +1,7 @@
-
 <?php
-header("Access-Control-Allow-Origin: *");
+// Cambia el la URL de tu frontend por el dominio en despliegue:
+header("Access-Control-Allow-Origin: http://localhost:4200");
+header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
@@ -8,10 +9,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit();
 }
 
+// Configura la cookie de sesión para desarrollo local
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'secure' => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
+// Iniciar sesión en cada petición
+session_start();
+
 // Incluir el archivo de configuración de la conexión a la base de datos
 include_once 'config.php';
-
-
 
 function reportes()
 {
@@ -97,6 +107,38 @@ function createAdmin($nombres, $apellidos, $correo, $codigo_admin, $contrasena, 
         $sexo = filter_var($sexo, FILTER_SANITIZE_STRING);
         $hashedPassword = password_hash($contrasena, PASSWORD_BCRYPT);
 
+        // Validar longitud máxima
+        if (strlen($nombres) > 50 || strlen($apellidos) > 50) {
+            http_response_code(400);
+            return json_encode(["error" => "Nombre y apellido no deben superar 50 caracteres"]);
+        }
+        if (strlen($codigo_admin) > 20) {
+            http_response_code(400);
+            return json_encode(["error" => "El código de administrador no debe superar 20 caracteres"]);
+        }
+        if (strlen($correo) > 100) {
+            http_response_code(400);
+            return json_encode(["error" => "El correo no debe superar 100 caracteres"]);
+        }
+        if (strlen($contrasena) > 50) {
+            http_response_code(400);
+            return json_encode(["error" => "La contraseña no debe superar 50 caracteres"]);
+        }
+        if ($edad === false || $edad < 0 || $edad > 120) {
+            http_response_code(400);
+            return json_encode(["error" => "Edad no válida"]);
+        }
+
+        // Validar duplicados
+        $sqlCheck = "SELECT idAdmin FROM administrador WHERE correo = ? OR codigo_admin = ?";
+        $stmtCheck = $conn->prepare($sqlCheck);
+        $stmtCheck->bind_param("ss", $correo, $codigo_admin);
+        $stmtCheck->execute();
+        $stmtCheck->store_result();
+        if ($stmtCheck->num_rows > 0) {
+            http_response_code(409);
+            return json_encode(["error" => "El correo o código de administrador ya existe"]);
+        }
 
         // Preparar la consulta SQL para crear un nuevo usuario
         $sql = "INSERT INTO administrador (nombres, apellidos, correo, codigo_admin, contrasena, edad, sexo) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -110,7 +152,7 @@ function createAdmin($nombres, $apellidos, $correo, $codigo_admin, $contrasena, 
             return json_encode(array("error" => "Error al crear Administrador"));
         }
     } catch (Exception $e) {
-        // Manejar cualquier excepción que pueda ocurrir
+        http_response_code(500);
         return json_encode(array("error" => $e->getMessage()));
     }
 }
@@ -203,7 +245,6 @@ function loginUser($correo, $contrasena)
     global $conn;
 
     try {
-        // Preparar la consulta SQL para obtener el usuario por correo
         $sql = "SELECT idAdmin, nombres, apellidos, correo, codigo_admin, contrasena, edad, sexo FROM administrador WHERE correo = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $correo);
@@ -211,10 +252,11 @@ function loginUser($correo, $contrasena)
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            // Verificar la contraseña
             $user = $result->fetch_assoc();
+
             if (password_verify($contrasena, $user['contrasena'])) {
-                unset($user['contrasena']); // No devolver la contraseña hash en la respuesta
+                $_SESSION['idAdmin'] = $user['idAdmin']; // Guardar id en sesión
+                unset($user['contrasena']);
                 return json_encode($user);
             } else {
                 return json_encode(array("error" => "Contraseña incorrecta"));
@@ -223,29 +265,85 @@ function loginUser($correo, $contrasena)
             return json_encode(array("error" => "Usuario no encontrado"));
         }
     } catch (Exception $e) {
-        // Manejar cualquier excepción que pueda ocurrir
         return json_encode(array("error" => $e->getMessage()));
     }
 }
 
-// Verificar si la solicitud es un método GET
+// Endpoint para cerrar sesión
+function logoutUser()
+{
+    session_unset();
+    session_destroy();
+    echo json_encode(['message' => 'Sesión cerrada']);
+    exit();
+}
 
+// Verificar si la solicitud es un método GET
 try {
-    switch ($_SERVER['REQUEST_METHOD']) {
-        case "GET":
-            if (isset($_GET['id'])) {
-                echo getUserById($_GET['id']);
-            } elseif (isset($_GET['action']) && $_GET['action'] === 'reportes') {
-                reportes();
-            } elseif (isset($_GET['action']) && $_GET['action'] === 'salidas') {
-                reportesSalida();
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+        // --- VERIFICACIÓN DE SESIÓN PARA EL AUTHGUARD ---
+        if (isset($_GET['checkSession'])) {
+            if (isset($_SESSION['idAdmin'])) {
+                echo json_encode(['active' => true]);
             } else {
-               http_response_code(404);
-               echo json_encode(array("error" => "Ruta no encontrada"));
+                http_response_code(401);
+                echo json_encode(['error' => 'Sesión expirada']);
             }
-            break;
-        case "POST":
-            $data = json_decode(file_get_contents("php://input"), true);
+            exit();
+        }
+
+        // PROTECCIÓN: Solo permite acceso si hay sesión, excepto para endpoints públicos
+        if (
+            !(
+                isset($_GET['action']) && ($_GET['action'] === 'login' || $_GET['action'] === 'registro')
+            )
+        ) {
+            if (!isset($_SESSION['idAdmin'])) {
+                http_response_code(401);
+                echo json_encode(['error' => 'Sesión expirada']);
+                exit();
+            }
+        }
+
+        if (isset($_GET['id'])) {
+            echo getUserById($_GET['id']);
+        } elseif (isset($_GET['action']) && $_GET['action'] === 'reportes') {
+            reportes();
+        } elseif (isset($_GET['action']) && $_GET['action'] === 'salidas') {
+            reportesSalida();
+        } else {
+            echo getAllUsers();
+        }
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        // LOGIN (público)
+        if (isset($data['action']) && $data['action'] === 'login') {
+            if (empty($data['correo']) || empty($data['contrasena'])) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Correo y contraseña son obligatorios']);
+                exit();
+            }
+            echo loginUser($data['correo'], $data['contrasena']);
+            exit();
+        }
+        // LOGOUT (público)
+        if (isset($data['action']) && $data['action'] === 'logout') {
+            logoutUser();
+            exit();
+        }
+        // REGISTRO ADMIN (público)
+        if (
+            isset($data['nombres']) &&
+            isset($data['apellidos']) &&
+            isset($data['correo']) &&
+            isset($data['codigo_admin']) &&
+            isset($data['contrasena']) &&
+            isset($data['edad']) &&
+            isset($data['sexo'])
+        ) {
+            // ...validaciones...
             if (
                 empty($data['nombres']) ||
                 empty($data['apellidos']) ||
@@ -269,34 +367,45 @@ try {
                 echo json_encode(['error' => 'La contraseña debe tener al menos 6 caracteres']);
                 exit();
             }
-    
-            if (isset($data['action']) && $data['action'] === 'login') {
-                echo loginUser($data['correo'], $data['contrasena']);
-            } else {
-                echo createAdmin($data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_admin'], $data['contrasena'], $data['edad'], $data['sexo']);
-            }
-            
-            break;
-        case "PUT":
-            $data = json_decode(file_get_contents("php://input"), true);
-            if (isset($data['id'])) {
-                echo updateUser($data['id'], $data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_estudiante']);
-            } else {
-                echo json_encode(array("error" => "ID de usuario no especificado para actualizar"));
-            }
-            break;
-        case "DELETE":
-            $data = json_decode(file_get_contents("php://input"), true);
-            if (isset($data['id'])) {
-                echo deleteUser($data['id']);
-            } else {
-                echo json_encode(array("error" => "ID de usuario no especificado para eliminar"));
-            }
-            break;
-        default:
-            http_response_code(405);
-            echo json_encode(array("error" => "Método no permitido"));
-            break;
+            echo createAdmin($data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_admin'], $data['contrasena'], $data['edad'], $data['sexo']);
+            exit();
+        }
+
+        // PROTECCIÓN: Todo lo demás requiere sesión
+        if (!isset($_SESSION['idAdmin'])) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Sesión expirada']);
+            exit();
+        }
+
+        // Aquí van las acciones protegidas por POST (actualizar, eliminar, etc.)
+        // ...
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+        // PROTECCIÓN: Solo permite acceso si hay sesión
+        if (!isset($_SESSION['idAdmin'])) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Sesión expirada']);
+            exit();
+        }
+        $data = json_decode(file_get_contents("php://input"), true);
+        if (isset($data['id'])) {
+            echo updateUser($data['id'], $data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_estudiante']);
+        } else {
+            echo json_encode(array("error" => "ID de usuario no especificado para actualizar"));
+        }
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+        // PROTECCIÓN: Solo permite acceso si hay sesión
+        if (!isset($_SESSION['idAdmin'])) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Sesión expirada']);
+            exit();
+        }
+        $data = json_decode(file_get_contents("php://input"), true);
+        if (isset($data['id'])) {
+            echo deleteUser($data['id']);
+        } else {
+            echo json_encode(array("error" => "ID de usuario no especificado para eliminar"));
+        }
     }
     } catch (Exception $e) {
     http_response_code(500);
@@ -304,4 +413,3 @@ try {
 }
 
 $conn->close();
-?>

@@ -1,17 +1,18 @@
 <ion-content class="container" [fullscreen]="true">
-  
+
   <div class="header">
     <div class="form-container">
-      
+
       <ion-list lines="none" class="ion-text-center login-form">
 
-        <ion-button class="btn-close" fill="clear" routerLink="/login">
-          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-        </ion-button>
-        <ion-title class="tit">¿Quieres cambiar tu</ion-title>
-        <ion-title class="tit">contraseña?</ion-title>
+        <div class="close-title-row">
+  <ion-button class="btn-close" fill="clear" routerLink="/login">
+    <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+  </ion-button>
+  <span class="tit">Nueva Contraseña</span>
+</div>
 
-        <p class="wel">Por favor, ingrese su correo. Se enviará un token de verificación para el cambio de contraseña.
+        <p class="wel">Ingrese su correo. Se enviará un token de verificación para el cambio de contraseña.
         </p>
 
         <ion-item>

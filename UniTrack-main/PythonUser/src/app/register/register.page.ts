@@ -15,9 +15,9 @@ export class RegisterPage implements OnInit {
   contrasena: string = '';
   correoA: string = ''; 
   carrera: string= ''; 
-  ciclo: string = ''; 
+  ciclo: string = '';
   edad: string= ''; 
-  sexo: string = ''; 
+  sexo: string = '';
   
   constructor(private userService: UserService, private router: Router) { }
 
