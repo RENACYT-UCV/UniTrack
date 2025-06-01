@@ -20,6 +20,7 @@
       </ion-item>
     </div>    
        
+
       <div class="table-container">
         <div class="tit">Código de Administrador:</div>
         <div class="sub">{{codigo}}</div>
@@ -29,10 +30,12 @@
         <div class="sub">{{edad}}</div>
         <div class="tit">Sexo:</div>
         <div class="sub">{{sexo}}</div>
-      </div> 
+      </div>
+
 
        <div class="centro">
-      <ion-button (click)="verifyQR()">Verificar QR</ion-button>
-    </div>
+        <ion-button (click)="verifyQR(qrLeido)">Verificar QR</ion-button>
+      </div>
+    
   </ion-content>
 </ion-content>
