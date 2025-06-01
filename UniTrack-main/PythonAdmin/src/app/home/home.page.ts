@@ -44,19 +44,6 @@ export class HomePage implements OnInit {
   }
 }
 
-  logout() {
-    this.userService.logoutUser().subscribe(
-      res => {
-        this.userService.setCurrentUser(null);
-        this.router.navigate(['/login']);
-      },
-      err => {
-        this.userService.setCurrentUser(null);
-        this.router.navigate(['/login']);
-      }
-    );
-  }
-
   verifyQR(qrLeido: string) {
     this.flaskservice.verifyQR(qrLeido).subscribe(
       result => {

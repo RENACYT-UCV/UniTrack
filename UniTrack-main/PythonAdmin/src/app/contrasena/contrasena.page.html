@@ -3,11 +3,13 @@
     <div class="form-container">
       <ion-list lines="none" class="ion-text-center login-form">
 
-        <ion-button class="btn-close" fill="clear" routerLink="/login">
-          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-        </ion-button>
-
-        <p class="wel">Ingrese Su Nueva Contraseña.</p>
+        <div class="close-title-row">
+          <ion-button class="btn-close" fill="clear" routerLink="/login">
+            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+          </ion-button>
+          <span class="tit">Ingrese Su Nueva Contraseña</span>
+          <span class="btn-close-placeholder"></span>
+        </div>
 
         <ion-item>
           <ion-label>Nueva contraseña:</ion-label>
@@ -21,15 +23,8 @@
 
 
         <ion-item class="ion-align-items-center">
-          <ion-button expand="block" color="primary" (click)="resetPassword()">
+          <ion-button  expand="block" color="primary" (click)="resetPassword()">
             Cambiar contraseña
-          </ion-button>
-        </ion-item>
-
-        <!-- Botón Cancelar -->
-        <ion-item class="ion-align-items-center">
-          <ion-button expand="block" color="medium" (click)="cancelarProceso()">
-            Cancelar
           </ion-button>
         </ion-item>
 
