@@ -1,0 +1,103 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #1435ca;
+  padding: 20px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.welcome {
+  font-size: 28px;
+  color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: normal;
+}
+
+.foto-perfil {
+  height: 150px;
+  width: 150px;
+  margin: auto;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  background-color: darkgray;
+}
+
+.foto-text {
+  font-size: 24px;
+  color: #ffffff;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.nombre {
+  font-size: 22px;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.text-item {
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.ionit {
+  --background: transparent;
+  margin-top: 20px;
+}
+
+.btn {
+  --box-shadow: none;
+  --background: white;
+  color: rgb(32, 74, 228);
+  font-weight: 800;
+  font-size: 20px;
+  --border-radius: 10px;
+  height: 50px;
+  width: 100%;
+  margin: auto;
+  text-transform: none;
+}
+
+ion-footer {
+  margin-top: 20px;
+}
+
+ion-grid {
+  width: 100%;
+}
+
+ion-col {
+  text-align: center;
+}
+
+ion-button {
+  width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  .welcome {
+    font-size: 20px;
+  }
+
+  .btn {
+    font-size: 16px;
+    padding: 12px;
+  }
+}

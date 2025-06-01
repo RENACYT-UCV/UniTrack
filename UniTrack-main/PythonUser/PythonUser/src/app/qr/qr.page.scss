@@ -1,0 +1,123 @@
+.title {
+  font-size: 36px;
+  color: black;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+ion-content {
+  --background: rgb(32, 74, 228);
+}
+
+ion-list {
+  background: rgb(32, 74, 228);
+}
+
+.nombre {
+  --background: transparent;
+  font-size: 20px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.ionit {
+  --background: transparent;
+  margin-top: 20px;
+}
+
+.ioniit {
+  --background: transparent;
+  margin-bottom: 10px;
+}
+
+.tit {
+  color: white;
+  font-size: 35px;
+  text-align: center;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: bold;
+}
+
+.text {
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 20px;
+  margin-bottom: 15px;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.imgper {
+  height: 200px;
+  width: 200px;
+  margin: auto;
+  margin-bottom: 5px;
+  border-radius: 50%;
+}
+
+.nom {
+  color: white;
+  font-size: 25px;
+  text-align: center;
+}
+
+.btn {
+  --box-shadow: none;
+  --background: white;
+  color: rgb(32, 74, 228);
+  font-weight: 800;
+  font-size: 20px;
+  --border-radius: 10px;
+  height: 50px;
+  width: auto;
+  padding: 0 30px;
+  margin: auto;
+  text-transform: none;
+  display: block;
+}
+
+@media screen and (max-width: 768px) {
+  .title {
+    font-size: 28px;
+  }
+
+  .welcome {
+    font-size: 18px;
+  }
+
+  .login-btn {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  .imgper {
+    height: 150px;
+    width: 150px;
+  }
+
+  .text {
+    font-size: 16px;
+    text-align: center;
+    padding: 0 10px;
+  }
+
+  .ionit {
+    margin-top: 10px;
+  }
+
+  .btn {
+    font-size: 16px;
+    height: 45px;
+    width: 90%;
+  }
+}
+

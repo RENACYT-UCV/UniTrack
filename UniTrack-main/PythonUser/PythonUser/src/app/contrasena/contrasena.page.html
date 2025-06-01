@@ -1,0 +1,49 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title class="tit">Cambio de Contraseña</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="login-container">
+    <div class="login-header">
+      <p class="welcome">¡CAMBIA TU CONTRASEÑA!</p>
+      <p class="subtitle">Asegúrate de que tu nueva contraseña sea diferente a la anterior.</p>
+    </div>
+
+    <!-- Formulario de cambio de contraseña -->
+    <div class="login-form">
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Nueva Contraseña:</ion-label>
+      </ion-item>
+
+      <ion-item class="input-item">
+        <ion-input
+          type="password"
+          [(ngModel)]="newPassword"
+          class="inp"
+          placeholder="Ingrese su nueva contraseña aquí"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Confirmar Contraseña:</ion-label>
+      </ion-item>
+
+      <ion-item class="input-item">
+        <ion-input
+          type="password"
+          [(ngModel)]="confirmPassword"
+          class="inp"
+          placeholder="Confirme su nueva contraseña aquí"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-button expand="full" class="login-btn" (click)="resetPassword()">Actualizar</ion-button>
+
+      <p class="go-back" (click)="irAlLogin()">¿Volver al Login?</p>
+    </div>
+  </div>
+</ion-content>

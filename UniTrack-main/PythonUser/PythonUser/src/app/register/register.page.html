@@ -1,0 +1,124 @@
+<ion-content [fullscreen]="true">
+  <div class="login-container">
+    <div class="login-header">
+      <p class="title">Universidad César Vallejo</p>
+    </div>
+
+    
+    <div class="login-form" *ngIf="vista === 'register'">
+      
+      <p class="welcome">¡Bienvenido! Completa el siguiente formulario para registrarte.</p>
+      <p class="subtitle">Por favor, ingresa los datos solicitados para completar tu registro.</p>
+
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Nombres:</ion-label>
+        <ion-input
+          type="text"
+          [(ngModel)]="nombres"
+          placeholder="Ingrese sus nombres"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Apellidos:</ion-label>
+        <ion-input
+          type="text"
+          [(ngModel)]="apellidos"
+          placeholder="Ingrese sus apellidos"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Correo Universitario:</ion-label>
+        <ion-input
+          type="email"
+          [(ngModel)]="correo"
+          placeholder="Ingrese su correo universitario"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Código de Estudiante:</ion-label>
+        <ion-input
+          type="text"
+          [(ngModel)]="codigo_estudiante"
+          placeholder="Ingrese su código de estudiante"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Correo del Apoderado:</ion-label>
+        <ion-input
+          type="email"
+          [(ngModel)]="correoA"
+          placeholder="Ingrese el correo del apoderado"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Carrera:</ion-label>
+        <ion-input
+          type="text"
+          [(ngModel)]="carrera"
+          placeholder="Ingrese su carrera"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Ciclo:</ion-label>
+        <ion-select [(ngModel)]="ciclo" placeholder="Seleccione su ciclo" required>
+          <ion-select-option value="I">I</ion-select-option>
+          <ion-select-option value="II">II</ion-select-option>
+          <ion-select-option value="III">III</ion-select-option>
+          <ion-select-option value="IV">IV</ion-select-option>
+          <ion-select-option value="V">V</ion-select-option>
+          <ion-select-option value="VI">VI</ion-select-option>
+          <ion-select-option value="VII">VII</ion-select-option>
+          <ion-select-option value="VIII">VIII</ion-select-option>
+          <ion-select-option value="IX">IX</ion-select-option>
+          <ion-select-option value="X">X</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Edad:</ion-label>
+        <ion-input
+          type="number"
+          [(ngModel)]="edad"
+          placeholder="Ingrese su edad"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Sexo:</ion-label>
+        <ion-select [(ngModel)]="sexo" placeholder="Seleccione su sexo" required>
+          <ion-select-option value="Mujer">Mujer</ion-select-option>
+          <ion-select-option value="Hombre">Hombre</ion-select-option>
+          <ion-select-option value="Prefiero No Decirlo">Prefiero No Decirlo</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Contraseña:</ion-label>
+        <ion-input
+          type="password"
+          [(ngModel)]="contrasena"
+          placeholder="Ingrese su contraseña"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-button expand="full" class="login-btn" (click)="registrarse()">Registrar</ion-button>
+
+     
+      <ion-button expand="full" fill="clear" (click)="irAlLogin()">Volver al Login</ion-button>
+    </div>
+  </div>
+</ion-content>

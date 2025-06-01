@@ -1,0 +1,31 @@
+<ion-content [fullscreen]="true">
+  <div class="login-container">
+    <div class="login-header">
+      <p class="title">Universidad César Vallejo</p>
+    </div>
+
+    <!-- Inicio de sesión -->
+    <div class="login-form" *ngIf="vista === 'login'">
+      <p class="welcome">¡BIENVENIDO!<br> INICIAR SESIÓN</p>
+      
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Correo Institucional:</ion-label>
+        <ion-input type="email" [(ngModel)]="correo" placeholder="Ingrese su correo institucional" required></ion-input>
+      </ion-item>
+      
+      <ion-item class="input-item">
+        <ion-label position="floating" class="input-label">Contraseña:</ion-label>
+        <ion-input type="password" [(ngModel)]="contrasena" placeholder="Ingrese su contraseña" required></ion-input>
+      </ion-item>
+
+      <ion-button expand="full" class="login-btn" (click)="login()">Iniciar sesión</ion-button>
+
+      <!-- Enlaces de Registro y Olvidé mi Contraseña -->
+      <div class="extra-links">
+        <p class="register-link" (click)="cambiarVista('register')">¿No tienes una cuenta? Regístrate</p>
+        <!-- Modificación aquí: redirigir a la página de cambio de contraseña -->
+        <p class="forgot-password-link" (click)="irACambioContrasena()">¿Olvidaste tu contraseña?</p>
+      </div>
+    </div>
+  </div>
+</ion-content>

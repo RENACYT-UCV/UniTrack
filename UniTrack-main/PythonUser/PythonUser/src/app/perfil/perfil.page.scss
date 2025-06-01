@@ -1,0 +1,145 @@
+/* Contenedor principal */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #1435ca;
+  padding: 20px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.title {
+  font-size: 32px;
+  color: #ffffff;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.login-form {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.ionit {
+  margin-bottom: 10px;
+}
+
+.imgper {
+  height: 100px;
+  width: 100px;
+  margin: auto;
+  margin-bottom: 5px;
+  background-color: #555;
+  border-radius: 50%;
+  text-align: center;
+}
+
+.imgper .foto {
+  color: #ddd;
+  margin-top: 40px;
+  font-size: 20px;
+}
+
+.nom {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.table-container {
+  width: 100%;
+  padding: 10px;
+}
+
+.tit {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  text-align: left;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.sub {
+  text-align: left;
+  padding: 10px;
+  font-size: 16px;
+}
+
+/* Footer */
+ion-footer ion-toolbar {
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+ion-footer ion-toolbar ion-grid {
+  display: flex;
+  justify-content: space-between; /* Asegura que los botones estén distribuidos uniformemente */
+  align-items: center;
+}
+
+ion-footer ion-toolbar ion-grid ion-button {
+  --padding-start: 0.75rem;
+  --padding-end: 0.73rem;
+}
+
+ion-footer ion-toolbar ion-grid ion-button ion-icon {
+  font-size: 1.5rem;
+  color: #555;
+}
+
+.footer-row {
+  display: flex;
+  justify-content: space-around; /* Distribuye los botones uniformemente */
+}
+
+.footer-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+  .title {
+    font-size: 26px;
+  }
+
+  .login-btn {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  .table-container {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  .sub, .tit {
+    font-size: 14px;
+  }
+
+  .nom {
+    font-size: 16px;
+  }
+
+  /* Ajuste para la distribución de los botones en pantallas pequeñas */
+  ion-footer ion-toolbar ion-grid {
+    justify-content: space-evenly; /* Asegura que los botones estén distribuidos equitativamente */
+  }
+}
