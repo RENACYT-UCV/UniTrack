@@ -9,11 +9,10 @@ import { ToastController } from '@ionic/angular';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-
- correo: string=''; 
- contrasena: string =''; 
- showPassword: boolean = false;
- isSubmitting = false; // Para prevenir envío doble
+  correo: string = ''; 
+  contrasena: string = '';
+  showPassword: boolean = false;
+  isSubmitting = false;
 
   constructor(
     private userService: UserService, 
@@ -28,80 +27,99 @@ export class LoginPage implements OnInit {
       color,
       position: 'bottom'
     });
-    toast.present();
+    await toast.present();
   }
 
   login() {
-
     if (this.isSubmitting) return;
     this.isSubmitting = true;
 
-    // Validar campos requeridos
-    if (!this.correo || !this.contrasena) {
-      this.presentToast('Correo y contraseña son obligatorios');
+    // Validación de campos vacíos
+    if (!this.correo.trim() || !this.contrasena.trim()) {
+      this.presentToast('Todos los campos son obligatorios');
       this.isSubmitting = false;
       return;
     }
 
-    // Validar formato de correo institucional
+    // Validación de formato de correo institucional
     const correoRegex = /^[a-zA-Z0-9._%+-]+@ucvvirtual\.edu\.pe$/;
-    if (!correoRegex.test(this.correo)) {
-      this.presentToast('El correo debe ser institucional y válido');
+    if (!correoRegex.test(this.correo.trim())) {
+      this.presentToast('Debe ingresar un correo institucional válido (@ucvvirtual.edu.pe)');
       this.isSubmitting = false;
       return;
     }
 
-    // Validar longitud máxima
+    // Validación de longitud de correo
     if (this.correo.length > 100) {
-      this.presentToast('El correo no debe superar 100 caracteres');
+      this.presentToast('El correo no debe exceder los 100 caracteres');
       this.isSubmitting = false;
       return;
     }
+
+    // Validación de contraseña
     if (this.contrasena.length < 6) {
       this.presentToast('La contraseña debe tener al menos 6 caracteres');
       this.isSubmitting = false;
       return;
     }
+
     if (this.contrasena.length > 50) {
-      this.presentToast('La contraseña no debe superar 50 caracteres');
+      this.presentToast('La contraseña no debe exceder los 50 caracteres');
       this.isSubmitting = false;
       return;
     }
-    
-    this.userService.loginUser(this.correo, this.contrasena).subscribe(
-      response => {
+
+    // Intento de login
+    this.userService.loginUser(this.correo.trim(), this.contrasena).subscribe({
+      next: (response) => {
         if (response.error) {
-          this.presentToast(response.message || 'Error de autenticación');
+          this.handleLoginError(response.message);
         } else {
-          this.userService.setCurrentUser(response);
-          this.presentToast('¡Login exitoso!', 'success');
-          this.router.navigate(['/home']);
+          this.handleLoginSuccess(response);
         }
-        this.isSubmitting = false;
       },
-      error => {
-        this.presentToast(error.message || 'Error de conexión');
-        this.isSubmitting = false;
+      error: (error) => {
+        this.handleLoginError(error.message || 'Error de conexión con el servidor');
       }
-    );
+    });
+  }
+
+  private handleLoginSuccess(response: any) {
+    this.userService.setCurrentUser(response);
+    this.presentToast('¡Bienvenido!', 'success');
+    this.router.navigate(['/home']);
+    this.isSubmitting = false;
+  }
+
+  private handleLoginError(errorMessage: string) {
+    const errorMessages: {[key: string]: string} = {
+      'User not found': 'Usuario no registrado',
+      'Invalid credentials': 'Correo o contraseña incorrectos',
+      'Account disabled': 'Cuenta desactivada, contacte al administrador',
+      'Too many attempts': 'Demasiados intentos fallidos, intente más tarde'
+    };
+
+    const friendlyMessage = errorMessages[errorMessage] || errorMessage;
+    this.presentToast(friendlyMessage);
+    this.isSubmitting = false;
   }
 
   ngOnInit() { 
-    this.correo = '';
-    this.contrasena = '';
-    localStorage.removeItem('correo');
-    localStorage.removeItem('contrasena');
-   }
+    this.resetForm();
+  }
 
-   ionViewWillEnter() {
-    this.correo = '';
-    this.contrasena = '';
-    localStorage.removeItem('correo');
-    localStorage.removeItem('contrasena');
+  ionViewWillEnter() {
+    this.resetForm();
   }
   
   togglePassword() {
     this.showPassword = !this.showPassword;
   }
 
+  private resetForm() {
+    this.correo = '';
+    this.contrasena = '';
+    localStorage.removeItem('correo');
+    localStorage.removeItem('contrasena');
+  }
 }
