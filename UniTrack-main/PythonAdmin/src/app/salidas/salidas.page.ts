@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FlaskService } from '../services/flask.service';
 import { UserService } from '../services/user.service';
 import { Reporte } from '../services/reporte';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-salidas',
@@ -15,8 +16,20 @@ export class SalidasPage implements OnInit {
   nombrecompleto: string = ''; 
   
 
-  constructor(private userService: UserService, private flaskservice: FlaskService) {
-  
+  constructor(
+    private userService: UserService,
+    private flaskservice: FlaskService,
+    private toastController: ToastController
+  ) {}
+
+  async presentToast(message: string, color: string = 'danger') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 
   Reportes(): void {
@@ -25,7 +38,7 @@ export class SalidasPage implements OnInit {
         this.reportes = data;
       },
       error => {
-        console.error('Error al obtener los reportes', error);
+         this.presentToast(error.message || 'Error al obtener los reportes de salidas');
       }
     );
   }

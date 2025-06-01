@@ -60,7 +60,18 @@ CREATE TABLE verificacion_codigo (
     codigo VARCHAR(6) NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     usado BOOLEAN DEFAULT FALSE,
+    intentos INT DEFAULT 0,
     FOREIGN KEY (id_usuario) REFERENCES usuario(idUsuario)
+);
+
+CREATE TABLE verificacion_codigo_admin (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_admin INT NOT NULL,
+  codigo VARCHAR(10) NOT NULL,
+  intentos INT DEFAULT 0,
+  usado TINYINT DEFAULT 0,
+  fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_admin) REFERENCES administrador(idAdmin)
 );
 
 SELECT * FROM verificacion_codigo;

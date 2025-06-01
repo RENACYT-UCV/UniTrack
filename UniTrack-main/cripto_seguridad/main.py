@@ -101,9 +101,6 @@ def generar_qr():
         qr_image_path = os.path.join(app.config['UPLOAD_FOLDER'], nombre_archivo_qr)
         generar_codigo_qr(hash_blockchain, qr_image_path)
 
-        # Mostrar la imagen y hash
-        print("Hash para blockchain:", hash_blockchain)
-
         os.remove(imagen_path)
         qr_image_url = url_for('static', filename=nombre_archivo_qr, _external=True)
         return jsonify({"qr_image_url": qr_image_url})
@@ -115,57 +112,52 @@ def generar_qr():
 
 @app.route('/verify_qr', methods=['POST'])
 def verify_qr():
-    contenido_qr = capturar_codigo_qr()
+    data = request.get_json()
+    contenido_qr = data.get('contenido_qr')
 
-    if contenido_qr:
-        # Verificar el contenido del QR con el hash de la blockchain
-        global hash_blockchain
-        if contenido_qr == hash_blockchain:
-            # Obtener la información del usuario temporal
-            user = get_temp_user()
-            if user:
-                user_id, nombre, correo, modo, correoA, timestamp = user[:6]
+    global hash_blockchain
 
-                # Define el periodo de restricción, por ejemplo, 10 minutos
-                restriccion = datetime.timedelta(minutes=10)
+    if not contenido_qr:
+        return jsonify({"verified": False, "error": "No se recibió el contenido del QR"}), 400
 
-                # Verificar el último registro del usuario en la tabla de reportes
-                mycursor = mydb.cursor()
-                sql = "SELECT timestamp FROM reportes WHERE user_id = %s AND modo = %s ORDER BY timestamp DESC LIMIT 1"
-                val = (user_id, modo)
-                mycursor.execute(sql, val)
-                last_record = mycursor.fetchone()
+    # Verificar el contenido del QR con el hash de la blockchain
+    if contenido_qr == hash_blockchain:
+        # Obtener la información del usuario temporal
+        user = get_temp_user()
+        if user:
+            user_id, nombre, correo, modo, correoA, timestamp = user[:6]
 
-                if last_record:
-                    last_timestamp = last_record[0]
-                    now = datetime.datetime.now()
-                    time_difference = now - last_timestamp
+            # Define el periodo de restricción, por ejemplo, 10 minutos
+            restriccion = datetime.timedelta(minutes=10)
 
-                    # Verificar si la diferencia de tiempo es menor a un umbral (por ejemplo, 10 minutos)
-                    if time_difference < restriccion:
-                        return jsonify({"error": "No puede generar el mismo modo de QR en un corto tiempo."}), 400
+            # Verificar el último registro del usuario en la tabla de reportes
+            mycursor = mydb.cursor()
+            sql = "SELECT timestamp FROM reportes WHERE user_id = %s AND modo = %s ORDER BY timestamp DESC LIMIT 1"
+            val = (user_id, modo)
+            mycursor.execute(sql, val)
+            last_record = mycursor.fetchone()
 
+            if last_record:
+                last_timestamp = last_record[0]
+                now = datetime.datetime.now()
+                time_difference = now - last_timestamp
 
-                data = {
-                    'id': user_id,
-                    'nombre': nombre,
-                    'correo': correo,
-                    'modo': modo,
-                    'correoA': correoA,
-                    'tiempo': timestamp
-                }
-                # Llamar al método reporte con la información del usuario
-                reporte_response = reporte(data)
+                if time_difference < restriccion:
+                    return jsonify({"error": "No puede generar el mismo modo de QR en un corto tiempo."}), 400
 
-                # Eliminar el usuario temporal después de generar el reporte
-                delete_temp_user()
-                return jsonify({"verified": True, "reporte": reporte_response.json})
+            data = {
+                'id': user_id,
+                'nombre': nombre,
+                'correo': correo,
+                'modo': modo,
+                'correoA': correoA,
+                'tiempo': timestamp
+            }
+            reporte_response = reporte(data)
+            delete_temp_user()
+            return jsonify({"verified": True, "reporte": reporte_response.json})
 
-        else:
-            return jsonify({"verified": False})
-
-    else:
-        return jsonify({"error": "No se pudo capturar el QR."}), 500
+    return jsonify({"verified": False})
 
 
 @app.route('/reporte', methods=['POST'])
@@ -216,10 +208,9 @@ def reporte(data=None):
                       recipients=[correoA])
         msg.body = f"El usuario {nombres} ingresó a las instalaciones a las {hora_actual} del {fecha_actual}."
         mail.send(msg)
-        print("Correo enviado exitosamente")
     except Exception as e:
-        print(f"Error enviando correo: {e}")
+       pass
     return jsonify({"reported": True})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

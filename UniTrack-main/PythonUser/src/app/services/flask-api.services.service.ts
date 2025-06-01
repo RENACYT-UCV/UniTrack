@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 import axios from 'axios';
 
@@ -8,7 +9,7 @@ import axios from 'axios';
   providedIn: 'root'
 })
 export class FlaskApiService {
-  private baseUrl = 'http://localhost:5000';
+  private baseUrl = environment.flaskUrl; // URL de tu API Flask
 
   constructor(private http: HttpClient) {}
 

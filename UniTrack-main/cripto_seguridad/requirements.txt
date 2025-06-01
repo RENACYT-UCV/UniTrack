@@ -6,3 +6,6 @@ numpy
 web3
 pillow
 python-dotenv
+Flask-Cors
+qrcode
+pyzbar
