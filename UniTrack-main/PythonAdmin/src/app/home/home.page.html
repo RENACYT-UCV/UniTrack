@@ -20,23 +20,23 @@
           <ion-item-divider routerLink="/salidas" class="baby-blue-item-divider">
             <ion-label>Reporte de salidas</ion-label>
           </ion-item-divider>
-          <ion-item-divider routerLink="/login" class="baby-blue-item-divider">
+          <ion-item-divider (click)="logout()" class="baby-blue-item-divider">
             <ion-label>Cerrar sesión</ion-label>
           </ion-item-divider>
         </ion-list>
       </ion-content>
     </ion-menu>
 
-    
+
     <div id="main-content">
       <div class="welcome">¡BIENVENIDO!</div>
-      
+
       <div class="user-info">
         <ion-item class="ionit" lines="none">
-         <div class="imgper"> <ion-label class="foto"> Foto</ion-label> </div>
-         <ion-label class="nom">{{ nombrecompleto }}</ion-label>
-        </ion-item>        
-       
+          <div class="imgper"> <ion-label class="foto"> Foto</ion-label> </div>
+          <ion-label class="nom">{{ nombrecompleto }}</ion-label>
+        </ion-item>
+
       </div>
       <div class="table-container">
         <div class="tit">Código de Administrador:</div>
@@ -47,12 +47,12 @@
         <div class="sub">{{edad}}</div>
         <div class="tit">Sexo:</div>
         <div class="sub">{{sexo}}</div>
-      </div> 
+      </div>
 
       <div class="centro">
-        <ion-button class="centro" (click)="verifyQR()">Verificar QR</ion-button>
+        <ion-button class="centro" (click)="verifyQR(qrLeido)">Verificar QR</ion-button>
       </div>
-      
+
     </div>
   </ion-split-pane>
 

@@ -17,10 +17,18 @@ export class RegisterPage implements OnInit {
   edad: string= ''; 
   sexo: string= ''; 
   contrasena: string = '';
-  
-  constructor(private userService: UserService, private router: Router, private toastController: ToastController) { }
+  isSubmitting = false; // Para prevenir envío doble
+
+  constructor(
+    private userService: UserService,
+    private router: Router,
+    private toastController: ToastController
+  ) { }
 
   onSubmit() {
+  if (this.isSubmitting) return; // Previene doble envío
+  this.isSubmitting = true;
+
   // Validaciones básicas
   if (
     !this.nombres ||
@@ -32,14 +40,42 @@ export class RegisterPage implements OnInit {
     !this.sexo
   ) {
     this.presentToast('Todos los campos son obligatorios');
+    this.isSubmitting = false;
     return;
   }
-  if (!this.correo.endsWith('@ucvvirtual.edu.pe')) {
-    this.presentToast('El correo debe ser de la universidad');
+  
+  // Validar formato de correo institucional
+  const correoRegex = /^[a-zA-Z0-9._%+-]+@ucvvirtual\.edu\.pe$/;
+  if (!correoRegex.test(this.correo)) {
+    this.presentToast('El correo debe ser institucional y válido');
+    this.isSubmitting = false;
+    return;
+  }
+
+  // Validar longitud máxima de campos
+  if (this.nombres.length > 50 || this.apellidos.length > 50) {
+    this.presentToast('Nombre y apellido no deben superar 50 caracteres');
+    this.isSubmitting = false;
+    return;
+  }
+  if (this.codigo_admin.length > 20) {
+    this.presentToast('El código de administrador no debe superar 20 caracteres');
+    this.isSubmitting = false;
+    return;
+  }
+  if (this.correo.length > 100) {
+    this.presentToast('El correo no debe superar 100 caracteres');
+    this.isSubmitting = false;
     return;
   }
   if (this.contrasena.length < 6) {
     this.presentToast('La contraseña debe tener al menos 6 caracteres');
+    this.isSubmitting = false;
+    return;
+  }
+  if (this.contrasena.length > 50) {
+    this.presentToast('La contraseña no debe superar 50 caracteres');
+    this.isSubmitting = false;
     return;
   }
 
@@ -53,22 +89,23 @@ export class RegisterPage implements OnInit {
     this.edad,
     this.sexo
   ).subscribe(
-    (response: any) => {
-      console.log('Administrador registrado con éxito', response);
-      this.presentToast('Administrador registrado con éxito');
+    () => {
+      this.presentToast('Administrador registrado con éxito', 'success');
       this.router.navigate(['/login']);
+      this.isSubmitting = false;
     },
     (error: any) => {
-      console.error('Error al registrar el usuario', error);
-      this.presentToast('Error al registrar el usuario');
+      this.presentToast(error.message || 'Error al registrar el usuario');
+      this.isSubmitting = false;
     }
   );
 }
 
-  async presentToast(message: string) {
+  async presentToast(message: string, color: string = 'danger') {
     const toast = await this.toastController.create({
       message: message,
       duration: 2000,
+      color,
       position: 'bottom'
     });
     await toast.present();
