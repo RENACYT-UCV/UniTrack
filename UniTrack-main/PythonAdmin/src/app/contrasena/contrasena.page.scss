@@ -28,26 +28,40 @@
 }
 
 /* Botón de cerrar */
-.btn-close {
-  position: absolute;
-  left: 15px; 
-  top: 15px; 
+.close-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.btn-close,
+.btn-close-placeholder {
   width: 40px;
   height: 40px;
+  flex-shrink: 0;
+}
+
+.btn-close {
+  margin-right: 12px;
   --padding-start: 0;
   --padding-end: 0;
   --box-shadow: none;
   color: black;
-  margin: 0; 
-  
   ion-icon {
     font-size: 1.8rem;
     transition: transform 0.2s ease;
   }
-
   &:active {
     transform: scale(0.95);
   }
+}
+
+.tit {
+  flex: 1;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 /* Mensaje de instrucción */
@@ -86,9 +100,9 @@ ion-item {
   --border-radius: 12px;
   --background: #0426ac;
   --color: white;
+  --height: 150px;      // Cambia aquí la altura del botón
+  font-size: 1.1rem;
   font-weight: 600;
-  font-size: 1rem;
-  height: 50px;
   width: 100%;
   margin: 25px 0 0 0;
   --box-shadow: 0 2px 8px rgba(4, 38, 172, 0.3);

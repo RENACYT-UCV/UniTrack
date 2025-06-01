@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MenuController, NavController } from '@ionic/angular';
 import { Router, NavigationEnd } from '@angular/router';
+import { UserService } from './services/user.service'; // <-- Agrega esta línea
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ export class AppComponent {
   constructor(
     private menuCtrl: MenuController,
     private router: Router,
-    private navCtrl: NavController
+    private userService: UserService
   ) {
     this.setupMenu();
   }
@@ -29,9 +30,16 @@ export class AppComponent {
   }
 
   // Método para cerrar sesión (llamado desde el ítem del menú)
-  public async logout() {
-    await this.menuCtrl.enable(false, 'main-menu'); // Deshabilita el menú
-    this.navCtrl.navigateRoot('/login'); // Redirige a login
-    this.menuCtrl.close('main-menu'); // Cierra el menú visualmente
+  logout() {
+    this.userService.logoutUser().subscribe(
+      res => {
+        this.userService.setCurrentUser(null);
+        this.router.navigate(['/login']);
+      },
+      err => {
+        this.userService.setCurrentUser(null);
+        this.router.navigate(['/login']);
+      }
+    );
   }
 }

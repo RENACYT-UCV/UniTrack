@@ -20,21 +20,34 @@
   margin: 20px 0;
 }
 
+.close-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center; // Cambia a center
+  margin-bottom: 16px;
+  position: relative;
+}
+
 .btn-close {
-  position: absolute; /* Posicionamiento absoluto */
-  left: 15px; 
-  top: 15px; 
+  margin-right: 12px;
   width: 40px;
   height: 40px;
   --padding-start: 0;
   --padding-end: 0;
   --box-shadow: none;
   color: black;
-  
   ion-icon {
-    font-size: 1.8rem; 
-    transition: transform 0.2s ease; 
+    font-size: 1.8rem;
+    transition: transform 0.2s ease;
   }
+}
+
+.tit {
+  flex: 1;
+  text-align: center; // Centra el texto
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-right: 40px; // Espacio para que no se solape con la X
 }
 
 /* Resto de estilos mejorados */
