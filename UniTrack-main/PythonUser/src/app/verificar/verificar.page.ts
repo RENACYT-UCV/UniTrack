@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { NavController } from '@ionic/angular';
 import { EnvioCorreoService } from '../services/envio-correo.service';
+import { ModalController } from '@ionic/angular'; //
+
 @Component({
   selector: 'app-verificar',
   templateUrl: './verificar.page.html',
@@ -9,7 +11,11 @@ import { EnvioCorreoService } from '../services/envio-correo.service';
 })
 export class VerificarPage implements OnInit {
   verificationCode: number | null= null ;
-  constructor(private userService: EnvioCorreoService, private navCtrl: NavController) { }
+  constructor(
+    private userService: EnvioCorreoService, 
+    private navCtrl: NavController,
+    private modalController: ModalController
+  ) { }
 
   ngOnInit() {
   }
@@ -27,5 +33,9 @@ export class VerificarPage implements OnInit {
       );
     }
    
+  }
+
+  async closeModal() {
+    this.navCtrl.navigateRoot('/login'); 
   }
 }
