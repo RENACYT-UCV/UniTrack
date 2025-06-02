@@ -1,26 +1,27 @@
 <?php
+// Cabeceras CORS para TODAS las respuestas
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type,  Authorization");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+// Manejo de solicitud OPTIONS (preflight)
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-// Incluir el archivo de configuración de la conexión a la base de datos
+// Incluir conexión a la base de datos
 include_once 'config.php';
 
+// Incluir PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 require 'PHPMailer-master/src/Exception.php';
 require 'PHPMailer-master/src/PHPMailer.php';
 require 'PHPMailer-master/src/SMTP.php';
 
-
-
-// Función para enviar correos electrónicos
+// Función para enviar correo con PHPMailer
 function enviarCorreo($correoDestino, $asunto, $cuerpo)
 {
     $mail = new PHPMailer(true);
@@ -29,8 +30,8 @@ function enviarCorreo($correoDestino, $asunto, $cuerpo)
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'mixie.brighit01@gmail.com';
-        $mail->Password = 'rnfi ybfp dzou xsgb';
-        $mail->SMTPSecure =  PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Password = 'rnfi ybfp dzou xsgb'; // Asegúrate de usar una contraseña de aplicación, no la de tu cuenta
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
         $mail->setFrom('mixie.brighit01@gmail.com', 'Somos X');
@@ -47,7 +48,7 @@ function enviarCorreo($correoDestino, $asunto, $cuerpo)
     }
 }
 
-
+// Función para obtener historial
 function historial($idUsuario)
 {
     global $conn;
@@ -71,263 +72,203 @@ function historial($idUsuario)
     echo json_encode($data);
 }
 
-
-// Función para obtener todos los usuarios
+// Obtener todos los usuarios
 function getAllUsers()
 {
     global $conn;
 
-    try {
-        // Preparar la consulta SQL para obtener todos los usuarios
-        $sql = "SELECT idusuario, nombres, apellidos, correo, codigo_estudiante FROM usuario";
-        $result = $conn->query($sql);
+    $sql = "SELECT idusuario, nombres, apellidos, correo, codigo_estudiante FROM usuario";
+    $result = $conn->query($sql);
 
-        if ($result->num_rows > 0) {
-            // Retornar los usuarios en formato JSON
-            return json_encode($result->fetch_all(MYSQLI_ASSOC));
-        } else {
-            // Retornar un mensaje de error si no hay usuarios
-            return json_encode(array("error" => "No se encontraron usuarios"));
-        }
-    } catch (Exception $e) {
-        // Manejar cualquier excepción que pueda ocurrir
-        return json_encode(array("error" => $e->getMessage()));
+    if ($result->num_rows > 0) {
+        return json_encode($result->fetch_all(MYSQLI_ASSOC));
+    } else {
+        return json_encode(["error" => "No se encontraron usuarios"]);
     }
 }
 
-// Función para obtener un usuario por ID
+// Obtener usuario por correo
 function CurrentUser($correo)
 {
     global $conn;
 
-    try {
-        // Preparar la consulta SQL para obtener el usuario por correo
-        $sql = "SELECT idUsuario, nombres, apellidos, correo, codigo_estudiante, correoA, carrera, ciclo, edad, sexo FROM usuario WHERE correo = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $correo);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    $sql = "SELECT idUsuario, nombres, apellidos, correo, codigo_estudiante, correoA, carrera, ciclo, edad, sexo 
+            FROM usuario WHERE correo = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $correo);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) {
-            // Devolver los datos del usuario
-            $user = $result->fetch_assoc();
-            return json_encode($user);
-        } else {
-            return json_encode(array("error" => "Usuario no encontrado"));
-        }
-    } catch (Exception $e) {
-        // Manejar cualquier excepción que pueda ocurrir
-        return json_encode(array("error" => $e->getMessage()));
+    if ($result->num_rows > 0) {
+        return json_encode($result->fetch_assoc());
+    } else {
+        return json_encode(["error" => "Usuario no encontrado"]);
     }
 }
 
-// Función para crear un nuevo usuario
+// Crear usuario
 function createUser($nombres, $apellidos, $correo, $codigo_estudiante, $contrasena, $correoA, $carrera, $ciclo, $edad, $sexo)
 {
     global $conn;
 
-    try {
-        // Validar y limpiar los datos de entrada
-        $nombres = filter_var($nombres, FILTER_SANITIZE_STRING);
-        $apellidos = filter_var($apellidos, FILTER_SANITIZE_STRING);
-        $correo = filter_var($correo, FILTER_SANITIZE_EMAIL);
-        $codigo_estudiante = filter_var($codigo_estudiante, FILTER_SANITIZE_STRING);
-        $hashedPassword = password_hash($contrasena, PASSWORD_BCRYPT);
-        $correoA = filter_var($correoA, FILTER_SANITIZE_STRING);
-        $carrera = filter_var($carrera, FILTER_SANITIZE_STRING);
-        $ciclo = filter_var($ciclo, FILTER_SANITIZE_STRING);
-        $edad = filter_var($edad, FILTER_SANITIZE_STRING);
-        $sexo = filter_var($sexo, FILTER_SANITIZE_STRING);
+    $hashedPassword = password_hash($contrasena, PASSWORD_BCRYPT);
 
+    $sql = "INSERT INTO usuario (nombres, apellidos, correo, codigo_estudiante, contrasena, correoA, carrera, ciclo, edad, sexo)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssssssssss", $nombres, $apellidos, $correo, $codigo_estudiante, $hashedPassword, $correoA, $carrera, $ciclo, $edad, $sexo);
 
-
-        // Preparar la consulta SQL para crear un nuevo usuario
-        $sql = "INSERT INTO usuario (nombres, apellidos, correo, codigo_estudiante, contrasena, correoA, carrera, ciclo, edad, sexo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssssss", $nombres, $apellidos, $correo, $codigo_estudiante, $hashedPassword, $correoA, $carrera, $ciclo, $edad, $sexo);
-
-        // Ejecutar la consulta y retornar el resultado
-        if ($stmt->execute()) {
-            return json_encode(array("message" => "Usuario creado correctamente"));
-        } else {
-            return json_encode(array("error" => "Error al crear usuario"));
-        }
-    } catch (Exception $e) {
-        // Manejar cualquier excepción que pueda ocurrir
-        return json_encode(array("error" => $e->getMessage()));
+    if ($stmt->execute()) {
+        return json_encode(["message" => "Usuario creado correctamente"]);
+    } else {
+        return json_encode(["error" => "Error al crear usuario"]);
     }
 }
 
-// Función para actualizar un usuario por ID
-function updateUser($id, $nombres, $apellidos, $correo, $codigo_estudiante)
-{
-    global $conn;
-
-    try {
-        // Validar y limpiar los datos de entrada
-        $id = filter_var($id, FILTER_VALIDATE_INT);
-        $nombres = filter_var($nombres, FILTER_SANITIZE_STRING);
-        $apellidos = filter_var($apellidos, FILTER_SANITIZE_STRING);
-        $correo = filter_var($correo, FILTER_SANITIZE_EMAIL);
-        $codigo_estudiante = filter_var($codigo_estudiante, FILTER_SANITIZE_STRING);
-
-        // Preparar la consulta SQL para actualizar un usuario por ID
-        $sql = "UPDATE usuario SET nombres = ?, apellidos = ?, correo = ?, codigo_estudiante = ? WHERE idusuario = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssi", $nombres, $apellidos, $correo, $codigo_estudiante, $id);
-
-        // Ejecutar la consulta y retornar el resultado
-        if ($stmt->execute()) {
-            return json_encode(array("message" => "Usuario actualizado correctamente"));
-        } else {
-            return json_encode(array("error" => "Error al actualizar usuario"));
-        }
-    } catch (Exception $e) {
-        // Manejar cualquier excepción que pueda ocurrir
-        return json_encode(array("error" => $e->getMessage()));
-    }
-}
-
-// Función para eliminar un usuario por ID
-function deleteUser($id)
-{
-    global $conn;
-
-    try {
-        // Validar y limpiar los datos de entrada
-        $id = filter_var($id, FILTER_VALIDATE_INT);
-
-        // Preparar la consulta SQL para eliminar un usuario por ID
-        $sql = "DELETE FROM usuario WHERE idusuario = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $id);
-
-        // Ejecutar la consulta y retornar el resultado
-        if ($stmt->execute()) {
-            return json_encode(array("message" => "Usuario eliminado correctamente"));
-        } else {
-            return json_encode(array("error" => "Error al eliminar usuario"));
-        }
-    } catch (Exception $e) {
-        // Manejar cualquier excepción que pueda ocurrir
-        return json_encode(array("error" => $e->getMessage()));
-    }
-}
-
-
-
-
-// Función para verificar usuario y contraseña
+// Login usuario
 function loginUser($correo, $contrasena)
 {
     global $conn;
 
-    try {
-        // Preparar la consulta SQL para obtener el usuario por correo
-        $sql = "SELECT idUsuario, nombres, apellidos, correo, codigo_estudiante, contrasena, correoA, carrera, ciclo, edad, sexo FROM usuario WHERE correo = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $correo);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    $sql = "SELECT idUsuario, nombres, apellidos, correo, codigo_estudiante, contrasena, correoA, carrera, ciclo, edad, sexo
+            FROM usuario WHERE correo = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $correo);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            if (password_verify($contrasena, $user['contrasena'])) {
-                unset($user['contrasena']);
-                return json_encode(array("success" => true, "user" => $user));
-            } else {
-                return json_encode(array("error" => "Contraseña incorrecta"));
-            }
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        if (password_verify($contrasena, $user['contrasena'])) {
+            unset($user['contrasena']);
+            return json_encode(["success" => true, "user" => $user]);
         } else {
-            return json_encode(array("error" => "Usuario no encontrado"));
+            return json_encode(["error" => "Contraseña incorrecta"]);
         }
-    } catch (Exception $e) {
-        // Manejar cualquier excepción que pueda ocurrir
-        return json_encode(array("error" => $e->getMessage()));
+    } else {
+        return json_encode(["error" => "Usuario no encontrado"]);
     }
-    global $user;
 }
-// Función para verificar usuario y contraseña admin
 
+// Actualizar usuario
+function updateUser($id, $nombres, $apellidos, $correo, $codigo_estudiante)
+{
+    global $conn;
+
+    $sql = "UPDATE usuario SET nombres = ?, apellidos = ?, correo = ?, codigo_estudiante = ? WHERE idusuario = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssssi", $nombres, $apellidos, $correo, $codigo_estudiante, $id);
+
+    if ($stmt->execute()) {
+        return json_encode(["message" => "Usuario actualizado correctamente"]);
+    } else {
+        return json_encode(["error" => "Error al actualizar usuario"]);
+    }
+}
+
+// Eliminar usuario
+function deleteUser($id)
+{
+    global $conn;
+
+    $sql = "DELETE FROM usuario WHERE idusuario = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id);
+
+    if ($stmt->execute()) {
+        return json_encode(["message" => "Usuario eliminado correctamente"]);
+    } else {
+        return json_encode(["error" => "Error al eliminar usuario"]);
+    }
+}
+
+// Enviar token de recuperación
+function sendToken($correo)
+{
+    global $conn;
+
+    $token = bin2hex(random_bytes(16)); // genera token de 32 caracteres
+
+    $stmt = $conn->prepare("UPDATE usuario SET token_recuperacion = ? WHERE correo = ?");
+    $stmt->bind_param("ss", $token, $correo);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        $asunto = "Recuperación de contraseña";
+        $cuerpo = "<p>Hola,</p><p>Tu token de recuperación es: <strong>$token</strong></p>";
+
+        if (enviarCorreo($correo, $asunto, $cuerpo)) {
+            echo json_encode(["message" => "Token enviado correctamente"]);
+        } else {
+            http_response_code(500);
+            echo json_encode(["error" => "No se pudo enviar el correo"]);
+        }
+    } else {
+        http_response_code(404);
+        echo json_encode(["error" => "Correo no encontrado"]);
+    }
+}
+
+// =========================
+//    ENRUTADOR PRINCIPAL
+// =========================
 
 try {
-    // Definir los endpoints de la API
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        if (isset($_GET['action']) && $_GET['action'] === 'currentUser' && isset($_GET['correo'])) {
-            // Obtener los datos del usuario actual por correo
+        if ($_GET['action'] === 'currentUser' && isset($_GET['correo'])) {
             echo CurrentUser($_GET['correo']);
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'historial' && isset($_GET['idUsuario'])) {
+        } elseif ($_GET['action'] === 'historial' && isset($_GET['idUsuario'])) {
             historial($_GET['idUsuario']);
         } else {
-            // Obtener todos los usuarios
             echo getAllUsers();
         }
     } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = json_decode(file_get_contents("php://input"), true);
-        if (isset($data['action']) && $data['action'] === 'login') {
-            // Login de usuario
+        $action = $data['action'] ?? '';
+
+        if ($action === 'login') {
             echo loginUser($data['correo'], $data['contrasena']);
+        } elseif ($action === 'sendVerificationCode') {
+            sendToken($data['correo']);
         } else {
-            // Validaciones básicas para registro de usuario
+            // Registro
             if (
-                empty($data['nombres']) ||
-                empty($data['apellidos']) ||
-                empty($data['correo']) ||
-                empty($data['codigo_estudiante']) ||
-                empty($data['contrasena']) ||
-                empty($data['correoA']) ||
-                empty($data['carrera']) ||
-                empty($data['ciclo']) ||
-                empty($data['edad']) ||
-                empty($data['sexo'])
+                empty($data['nombres']) || empty($data['apellidos']) || empty($data['correo']) ||
+                empty($data['codigo_estudiante']) || empty($data['contrasena']) ||
+                empty($data['correoA']) || empty($data['carrera']) ||
+                empty($data['ciclo']) || empty($data['edad']) || empty($data['sexo'])
             ) {
                 http_response_code(400);
                 echo json_encode(['error' => 'Todos los campos son obligatorios']);
                 exit();
             }
+
             if (!preg_match('/@ucvvirtual\.edu\.pe$/', $data['correo'])) {
                 http_response_code(400);
                 echo json_encode(['error' => 'El correo debe ser de la universidad']);
                 exit();
             }
+
             if (strlen($data['contrasena']) < 6) {
                 http_response_code(400);
                 echo json_encode(['error' => 'La contraseña debe tener al menos 6 caracteres']);
                 exit();
             }
-            // Crear un nuevo usuario
+
             echo createUser(
-                $data['nombres'],
-                $data['apellidos'],
-                $data['correo'],
-                $data['codigo_estudiante'],
-                $data['contrasena'],
-                $data['correoA'],
-                $data['carrera'],
-                $data['ciclo'],
-                $data['edad'],
-                $data['sexo']
+                $data['nombres'], $data['apellidos'], $data['correo'],
+                $data['codigo_estudiante'], $data['contrasena'], $data['correoA'],
+                $data['carrera'], $data['ciclo'], $data['edad'], $data['sexo']
             );
         }
     } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $data = json_decode(file_get_contents("php://input"), true);
-        // Actualizar un usuario
-        if (isset($data['id'])) {
-            echo updateUser($data['id'], $data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_estudiante']);
-        } else {
-            echo json_encode(array("error" => "ID de usuario no especificado para actualizar"));
-        }
+        echo updateUser($data['id'], $data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_estudiante']);
     } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         $data = json_decode(file_get_contents("php://input"), true);
-        // Eliminar un usuario
-        if (isset($data['id'])) {
-            echo deleteUser($data['id']);
-        } else {
-            echo json_encode(array("error" => "ID de usuario no especificado para eliminar"));
-        }
+        echo deleteUser($data['id']);
     }
 } catch (Exception $e) {
-    // Manejar la excepción y retornar un mensaje de error en formato JSON
     http_response_code(500);
-    echo json_encode(array("error" => $e->getMessage()));
+    echo json_encode(["error" => $e->getMessage()]);
 }

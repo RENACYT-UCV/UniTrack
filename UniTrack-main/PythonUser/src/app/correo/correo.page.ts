@@ -17,7 +17,7 @@ email: string = '';
   }
 
   sendVerificationCode() {
-    this.userService.sendVerificationCodee(this.email).subscribe(
+    this.userService.sendVerificationCode(this.email).subscribe(
       response => {
         this.navCtrl.navigateForward('/verificar');
       },

@@ -14,7 +14,7 @@ export class ContrasenaPage implements OnInit {
   constructor(private userService: EnvioCorreoService, private navCtrl: NavController) {}
 
   resetPassword() {
-    this.userService.resetPassword(this.newPassword).subscribe(
+    this.userService.resetPassword(this.newPassword, this.userService.currentUser.code).subscribe(
       response => {
         this.navCtrl.navigateRoot('/login');
       },

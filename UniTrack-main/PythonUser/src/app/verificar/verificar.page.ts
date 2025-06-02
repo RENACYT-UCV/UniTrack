@@ -20,22 +20,31 @@ export class VerificarPage implements OnInit {
   ngOnInit() {
   }
   verifyCode() {
-    if(this.verificationCode){
-      console.log(this.verificationCode); 
+    if (this.verificationCode) {
       this.userService.verifyVerificationCode(this.verificationCode).subscribe(
-        response => {
-          this.navCtrl.navigateForward('/contrasena');
+        (response: any) => {
+          if (response.success) {
+            // Guardar el id_user en el servicio para usarlo luego
+            this.userService.currentUser = { id: response.id_user, code: this.verificationCode };
+  
+            // Navegar a la página de cambiar contraseña
+            this.navCtrl.navigateForward('/contrasena');
+          } else {
+            alert('Código inválido o expirado');
+          }
         },
         error => {
           console.error(error);
-          // Manejo de errores
+          alert('Error al verificar el código');
         }
       );
+    } else {
+      alert('Por favor, ingrese el código de verificación');
     }
-   
   }
 
   async closeModal() {
     this.navCtrl.navigateRoot('/login'); 
   }
+
 }
