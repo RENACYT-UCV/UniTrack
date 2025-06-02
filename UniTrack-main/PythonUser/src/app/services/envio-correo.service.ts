@@ -13,7 +13,7 @@ export class EnvioCorreoService {
 
   constructor(private http: HttpClient, private navCtrl: NavController) { } 
  // Envía el código de verificación al correo del usuario
- sendVerificationCodee(email: string): Observable<any> {
+ sendVerificationCode(email: string): Observable<any> {
     const body = { action: 'send-code', email };
     return this.http.post(`${this.apiUrl}`, body);
   }
@@ -25,8 +25,8 @@ export class EnvioCorreoService {
     return this.http.post(`${this.apiUrl}`, body);
   }
    // Restablece la contraseña del usuario
-   resetPassword(newPassword: string): Observable<any> {
-    const body = { action: 'reset-password', password: newPassword };
+   resetPassword(newPassword: string, code: string): Observable<any> {
+    const body = { action: 'reset-password', password: newPassword, code };
     return this.http.post(`${this.apiUrl}`, body);
   }
 }
