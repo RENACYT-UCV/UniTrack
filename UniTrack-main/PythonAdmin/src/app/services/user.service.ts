@@ -4,6 +4,7 @@ import { Observable , throwError } from 'rxjs';
 import { Reporte } from './reporte';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { Action } from 'rxjs/internal/scheduler/Action';
 @Injectable({
   providedIn: 'root'
 })
@@ -37,9 +38,9 @@ export class UserService {
       return throwError({ error: true, message: 'El correo debe ser de la universidad' });
     }
     const sexoNormalizado = sexo.toLowerCase() === 'hombre' ? 'M' : (sexo.toLowerCase() === 'mujer' ? 'F' : sexo);
-    const body = { nombres, apellidos, correo, codigo_admin, contrasena, edad, sexo: sexoNormalizado };
+    const body = {action:"register-admin", nombres, apellidos, correo, codigo_admin, contrasena, edad, sexo: sexoNormalizado };
 
-    return this.http.post<any>(this.apiUrl, body).pipe(
+    return this.http.post<any>(this.apiUrl,body).pipe(
       catchError((error) => throwError({ error: true, message: 'Error al crear administrador', details: error }))
     );
   }
@@ -55,8 +56,8 @@ export class UserService {
 
   // Iniciar sesión de usuario
    loginUser(correo: string, contrasena: string): Observable<any> {
-    const body = { action: 'login', correo, contrasena };
-    return this.http.post(`${this.apiUrl}`, body, { withCredentials: true }).pipe(
+    const body = { action: 'login-admin', correo, contrasena };
+    return this.http.post(`${this.apiUrl}`, body).pipe(
       catchError((error) => throwError({ error: true, message: 'Error al iniciar sesión', details: error }))
     );
   }
@@ -64,7 +65,7 @@ export class UserService {
   // Cerrar sesión (protegido)
   logoutUser(): Observable<any> {
     const body = { action: 'logout' };
-    return this.http.post(`${this.apiUrl}`, body, { withCredentials: true }).pipe(
+    return this.http.post(`${this.apiUrl}`, body).pipe(
       catchError((error) => throwError({ error: true, message: 'Error al cerrar sesión', details: error }))
     );
   }
@@ -94,14 +95,14 @@ export class UserService {
   
    // Obtener reportes (protegido)
   getReportes(): Observable<Reporte[]> {
-    return this.http.get<Reporte[]>(`${this.apiUrl}?action=reportes`, { withCredentials: true }).pipe(
+    return this.http.get<Reporte[]>(`${this.apiUrl}?action=reportes` ).pipe(
       catchError((error) => throwError({ error: true, message: 'Error al obtener reportes', details: error }))
     );
   }
 
   // Obtener reportes de salidas (protegido)
   getReportesSalidas(): Observable<Reporte[]> {
-    return this.http.get<Reporte[]>(`${this.apiUrl}?action=salidas`, { withCredentials: true }).pipe(
+    return this.http.get<Reporte[]>(`${this.apiUrl}?action=salidas`).pipe(
       catchError((error) => throwError({ error: true, message: 'Error al obtener reportes de salidas', details: error }))
     );
   }

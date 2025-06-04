@@ -16,10 +16,10 @@ export class AuthGuard implements CanActivate {
 
   canActivate(): Observable<boolean> {
   return this.http.get<any>(
-    `${environment.apiUrl}?checkSession=1`,
-    { withCredentials: true }
+    `${environment.apiUrl}?action=checkSession`,
+  
   ).pipe(
-    map(response => true),
+    map(response => response.active),
     catchError(err => {
       this.router.navigate(['/login']);
       return of(false);

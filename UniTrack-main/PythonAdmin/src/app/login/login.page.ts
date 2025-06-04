@@ -31,7 +31,7 @@ export class LoginPage implements OnInit {
     toast.present();
   }
 
-  login() {
+ async login() {
 
     if (this.isSubmitting) return;
     this.isSubmitting = true;
@@ -68,7 +68,7 @@ export class LoginPage implements OnInit {
       return;
     }
     
-    this.userService.loginUser(this.correo, this.contrasena).subscribe(
+  this.userService.loginUser(this.correo, this.contrasena).subscribe(
       response => {
         if (response.error) {
           this.presentToast(response.message || 'Error de autenticación');

@@ -20,7 +20,7 @@ export class UserService {
     if (!correo.endsWith('@ucvvirtual.edu.pe')) {
       return throwError('El correo debe ser de la universidad');
     }
-    const body = { nombres, apellidos, correo, codigo_estudiante, contrasena, correoA, carrera, ciclo, edad, sexo  };
+    const body = {"action": "register", nombres, apellidos, correo, codigo_estudiante, contrasena, correoA, carrera, ciclo, edad, sexo  };
     return this.http.post(this.apiUrl, body);  // Puedes usar comillas invertidas si prefieres: `${this.apiUrl}`
   }
 
@@ -59,7 +59,8 @@ export class UserService {
   }
 
   gethistorial(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}?action=historial&idUsuario=${id}`);
+    const body = { action: 'historial', idUsuario: id };
+    return this.http.post(`${this.apiUrl}`, body);
 }
 
 

@@ -10,16 +10,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit();
 }
 
-// Incluir conexión a la base de datos
-include_once 'config.php';
 
 // Incluir PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'PHPMailer-master/src/Exception.php';
-require 'PHPMailer-master/src/PHPMailer.php';
-require 'PHPMailer-master/src/SMTP.php';
+require_once __DIR__ . '/vendor/autoload.php'; // Dotenv
+include_once 'config.php'; // Configuración de base de datos
+
+
 
 // Función para enviar correo con PHPMailer
 function enviarCorreo($correoDestino, $asunto, $cuerpo)
@@ -49,8 +48,14 @@ function enviarCorreo($correoDestino, $asunto, $cuerpo)
 }
 
 // Función para obtener historial
-function historial($idUsuario)
+function historial($data)
 {
+    if (empty($data) || !isset($data['idUsuario'])) {
+        http_response_code(400);
+        return json_encode(['error' => 'ID de usuario no proporcionado']);
+    }
+    $idUsuario = $data['idUsuario'];
+
     global $conn;
 
     $sql = "SELECT u.idUsuario, r.fecha, r.hora, r.nombre, r.email, r.modo
@@ -67,29 +72,23 @@ function historial($idUsuario)
     while ($row = $result->fetch_assoc()) {
         $data[] = $row;
     }
-
-    header('Content-Type: application/json');
-    echo json_encode($data);
-}
-
-// Obtener todos los usuarios
-function getAllUsers()
-{
-    global $conn;
-
-    $sql = "SELECT idusuario, nombres, apellidos, correo, codigo_estudiante FROM usuario";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        return json_encode($result->fetch_all(MYSQLI_ASSOC));
+    if ($data) {
+        header('Content-Type: application/json');
+        return json_encode($data);
     } else {
-        return json_encode(["error" => "No se encontraron usuarios"]);
+        return json_encode(['error' => 'No se encontraron reportes']);
     }
 }
 
+
 // Obtener usuario por correo
-function CurrentUser($correo)
+function CurrentUser($data)
 {
+    if (empty($data) || !isset($data['correo'])) {
+        http_response_code(400);
+        return json_encode(['error' => 'Correo no proporcionado']);
+    }
+    $correo = $data['correo'];
     global $conn;
 
     $sql = "SELECT idUsuario, nombres, apellidos, correo, codigo_estudiante, correoA, carrera, ciclo, edad, sexo 
@@ -107,8 +106,22 @@ function CurrentUser($correo)
 }
 
 // Crear usuario
-function createUser($nombres, $apellidos, $correo, $codigo_estudiante, $contrasena, $correoA, $carrera, $ciclo, $edad, $sexo)
+function createUser($data)
 {
+    if(empty($data) || !isset($data['nombres']) || !isset($data['apellidos']) || !isset($data['correo']) || !isset($data['codigo_estudiante']) || !isset($data['contrasena']) || !isset($data['correoA']) || !isset($data['carrera']) || !isset($data['ciclo']) || !isset($data['edad']) || !isset($data['sexo'])) {
+        http_response_code(400);
+        return json_encode(['error' => 'Todos los campos son obligatorios']);
+    }
+    $nombres = $data['nombres'];
+    $apellidos = $data['apellidos'];
+    $correo = $data['correo'];
+    $codigo_estudiante = $data['codigo_estudiante'];
+    $contrasena = $data['contrasena'];
+    $correoA = $data['correoA'];
+    $carrera = $data['carrera'];
+    $ciclo = $data['ciclo'];
+    $edad = $data['edad'];
+    $sexo = $data['sexo'];
     global $conn;
 
     $hashedPassword = password_hash($contrasena, PASSWORD_BCRYPT);
@@ -125,9 +138,20 @@ function createUser($nombres, $apellidos, $correo, $codigo_estudiante, $contrase
     }
 }
 
-// Login usuario
-function loginUser($correo, $contrasena)
+function checkSession()
 {
+    
+    return json_encode(["active" => true]);
+}
+// Login usuario
+function loginUser($data)
+{
+    if (empty($data) || !isset($data['correo']) || !isset($data['contrasena'])) {
+        http_response_code(400);
+        return json_encode(['error' => 'Correo y contraseña son obligatorios']);
+    }
+    $correo = $data['correo'];
+    $contrasena = $data['contrasena'];
     global $conn;
 
     $sql = "SELECT idUsuario, nombres, apellidos, correo, codigo_estudiante, contrasena, correoA, carrera, ciclo, edad, sexo
@@ -151,8 +175,19 @@ function loginUser($correo, $contrasena)
 }
 
 // Actualizar usuario
-function updateUser($id, $nombres, $apellidos, $correo, $codigo_estudiante)
+function updateUser($data)
 {
+    validateSession();
+    if (empty($data) || !isset($data['id']) || !isset($data['nombres']) || !isset($data['apellidos']) || !isset($data['correo']) || !isset($data['codigo_estudiante'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'ID, nombres, apellidos, correo y código de estudiante son obligatorios']);
+        exit();
+    }
+    $id = $data['id'];
+    $nombres = $data['nombres'];
+    $apellidos = $data['apellidos'];
+    $correo = $data['correo'];
+    $codigo_estudiante = $data['codigo_estudiante'];
     global $conn;
 
     $sql = "UPDATE usuario SET nombres = ?, apellidos = ?, correo = ?, codigo_estudiante = ? WHERE idusuario = ?";
@@ -167,8 +202,15 @@ function updateUser($id, $nombres, $apellidos, $correo, $codigo_estudiante)
 }
 
 // Eliminar usuario
-function deleteUser($id)
+function deleteUser($data)
 {
+    validateSession();
+    if (empty($data) || !isset($data['id'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'ID es obligatorio']);
+        exit();
+    }
+    $id = $data['id'];
     global $conn;
 
     $sql = "DELETE FROM usuario WHERE idusuario = ?";
@@ -209,66 +251,4 @@ function sendToken($correo)
     }
 }
 
-// =========================
-//    ENRUTADOR PRINCIPAL
-// =========================
-
-try {
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        if ($_GET['action'] === 'currentUser' && isset($_GET['correo'])) {
-            echo CurrentUser($_GET['correo']);
-        } elseif ($_GET['action'] === 'historial' && isset($_GET['idUsuario'])) {
-            historial($_GET['idUsuario']);
-        } else {
-            echo getAllUsers();
-        }
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $data = json_decode(file_get_contents("php://input"), true);
-        $action = $data['action'] ?? '';
-
-        if ($action === 'login') {
-            echo loginUser($data['correo'], $data['contrasena']);
-        } elseif ($action === 'sendVerificationCode') {
-            sendToken($data['correo']);
-        } else {
-            // Registro
-            if (
-                empty($data['nombres']) || empty($data['apellidos']) || empty($data['correo']) ||
-                empty($data['codigo_estudiante']) || empty($data['contrasena']) ||
-                empty($data['correoA']) || empty($data['carrera']) ||
-                empty($data['ciclo']) || empty($data['edad']) || empty($data['sexo'])
-            ) {
-                http_response_code(400);
-                echo json_encode(['error' => 'Todos los campos son obligatorios']);
-                exit();
-            }
-
-            if (!preg_match('/@ucvvirtual\.edu\.pe$/', $data['correo'])) {
-                http_response_code(400);
-                echo json_encode(['error' => 'El correo debe ser de la universidad']);
-                exit();
-            }
-
-            if (strlen($data['contrasena']) < 6) {
-                http_response_code(400);
-                echo json_encode(['error' => 'La contraseña debe tener al menos 6 caracteres']);
-                exit();
-            }
-
-            echo createUser(
-                $data['nombres'], $data['apellidos'], $data['correo'],
-                $data['codigo_estudiante'], $data['contrasena'], $data['correoA'],
-                $data['carrera'], $data['ciclo'], $data['edad'], $data['sexo']
-            );
-        }
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-        $data = json_decode(file_get_contents("php://input"), true);
-        echo updateUser($data['id'], $data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_estudiante']);
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-        $data = json_decode(file_get_contents("php://input"), true);
-        echo deleteUser($data['id']);
-    }
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(["error" => $e->getMessage()]);
-}
+ 

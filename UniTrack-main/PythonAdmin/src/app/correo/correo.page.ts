@@ -59,16 +59,9 @@ export class CorreoPage implements OnInit {
       return;
     }
     
-    this.userService.sendVerificationCodee(this.email).subscribe(
-      response => {
-        this.navCtrl.navigateForward('/verificar');
-        this.isSubmitting = false;
-      },
-      error => {
-        this.presentToast(error.message || 'Error al enviar el código de verificación');
-        this.isSubmitting = false;
-      }
-    );
+    this.userService.sendVerificationCodee(this.email);
+    this.navCtrl.navigateForward('/verificar');
+    this.isSubmitting = false;
   }
 
 }

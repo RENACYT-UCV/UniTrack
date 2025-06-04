@@ -1,23 +1,10 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header('Content-Type: application/json');
-
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
 require_once __DIR__ . '/vendor/autoload.php'; // Dotenv
 include_once 'config.php'; // Configuración de base de datos
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'PHPMailer-master/src/PHPMailer.php';
-require 'PHPMailer-master/src/SMTP.php';
-require 'PHPMailer-master/src/Exception.php';
 
 // Cargar variables de entorno
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -53,10 +40,18 @@ function getUserIdByEmail($email) {
 }
 
 // Enviar código
-function sendUserCode($email) {
+function sendUserCode($data) {
+
+    if (empty($data) || !isset($data['email'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Correo no proporcionado']);
+        exit();
+    }
+    $email = $data['email'];
     global $conn;
 
     $userId = getUserIdByEmail($email);
+    echo $userId;
     if (!$userId) {
         http_response_code(404);
         echo json_encode(["success" => false, "error" => "Correo no registrado"]);
@@ -103,7 +98,14 @@ function sendUserCode($email) {
 }
 
 // Verificar código
-function verifyUserCode($code) {
+function verifyUserCode($data) {
+
+    if (empty($data) || !isset($data['code'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Código no proporcionado']);
+        exit();
+    }
+    $code = $data['code'];
     global $conn;
     $sql = "SELECT * FROM verificacion_codigo WHERE codigo = ? AND usado = 0 AND fecha_creacion >= (NOW() - INTERVAL 15 MINUTE)";
     $stmt = $conn->prepare($sql);
@@ -140,8 +142,15 @@ function verifyUserCode($code) {
 }
 
 // Restablecer contraseña
-function resetUserPassword($password, $code) {
+function resetUserPassword($data) {
+    if(empty($data) || !isset($data['code']) || !isset($data['password'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Código y contraseña son obligatorios']);
+        exit();
+    }
     global $conn;
+    $code = $data['code'];
+    $password = $data['password'];
     $sql = "SELECT id_usuario FROM verificacion_codigo WHERE codigo = ? AND usado = 0 AND fecha_creacion >= (NOW() - INTERVAL 15 MINUTE)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $code);
@@ -175,19 +184,4 @@ function resetUserPassword($password, $code) {
         echo json_encode(["success" => false, "error" => "Código inválido o expirado"]);
         return;
     }
-}
-
-// Routing
-$data = json_decode(file_get_contents("php://input"), true);
-$action = isset($data['action']) ? $data['action'] : '';
-
-if ($action === 'send-code' && !empty($data['email'])) {
-    sendUserCode($data['email']);
-} elseif ($action === 'verify-code' && !empty($data['code'])) {
-    verifyUserCode($data['code']);
-} elseif ($action === 'reset-password' && !empty($data['password']) && !empty($data['code'])) {
-    resetUserPassword($data['password'], $data['code']);
-} else {
-    http_response_code(400);
-    echo json_encode(["success" => false, "error" => "Acción o datos inválidos"]);
 }

@@ -1,14 +1,4 @@
 <?php
-// Cambia el la URL de tu frontend por el dominio en despliegue:
-header("Access-Control-Allow-Origin: http://localhost:4200");
-header("Access-Control-Allow-Credentials: true");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
 // Configura la cookie de sesión para desarrollo local
 session_set_cookie_params([
     'lifetime' => 0,
@@ -21,10 +11,10 @@ session_set_cookie_params([
 session_start();
 
 // Incluir el archivo de configuración de la conexión a la base de datos
-include_once 'config.php';
 
 function reportes()
 {
+    validateSession();
     global $conn;
 
     $sql = "SELECT r.idReporte,  r.fecha, r.hora, r.nombre, r.email, r.modo
@@ -41,10 +31,11 @@ function reportes()
     }
 
     header('Content-Type: application/json');
-    echo json_encode($data);
+    return json_encode($data);
 }
 function reportesSalida()
 {
+    validateSession();
     global $conn;
 
     $sql = "SELECT r.idReporte,  r.fecha, r.hora, r.nombre, r.email, r.modo
@@ -93,8 +84,27 @@ function getAllUsers()
 
 
 // Función para crear un nuevo admin
-function createAdmin($nombres, $apellidos, $correo, $codigo_admin, $contrasena, $edad, $sexo)
-{
+function createAdmin($data)
+{ 
+    if (empty($data) || !isset($data['nombres']) || !isset($data['apellidos']) || !isset($data['correo']) || !isset($data['codigo_admin']) || !isset($data['contrasena']) || !isset($data['edad']) || !isset($data['sexo'])) {
+        http_response_code(400);
+        return json_encode(['error' => 'Todos los campos son obligatorios']);
+    }
+    if (!preg_match('/@ucvvirtual\.edu\.pe$/', $data['correo'])) {
+        http_response_code(400);
+        return json_encode(['error' => 'El correo debe ser de la universidad']);
+    }
+    if (strlen($data['contrasena']) < 6) {
+        http_response_code(400);
+        return json_encode(['error' => 'La contraseña debe tener al menos 6 caracteres']);
+    }
+    $nombres = $data['nombres'];
+    $apellidos = $data['apellidos'];
+    $correo = $data['correo'];
+    $codigo_admin = $data['codigo_admin'];
+    $contrasena = $data['contrasena'];
+    $edad = $data['edad'];
+    $sexo = $data['sexo'];
     global $conn;
 
     try {
@@ -158,8 +168,19 @@ function createAdmin($nombres, $apellidos, $correo, $codigo_admin, $contrasena, 
 }
 
 
-function updateUser($id, $nombres, $apellidos, $correo, $codigo_estudiante)
+function updateAdmin($data)
 {
+    validateSession();
+    if(empty($data) || !isset($data['id']) || !isset($data['nombres']) || !isset($data['apellidos']) || !isset($data['correo']) || !isset($data['codigo_admin'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'ID, nombres, apellidos, correo y código de administrador son obligatorios']);
+        exit();
+    }
+    $id = $data['id'];
+    $nombres = $data['nombres'];
+    $apellidos = $data['apellidos'];
+    $correo = $data['correo'];
+    $codigo_estudiante = $data['codigo_estudiante'];
     global $conn;
 
     try {
@@ -188,8 +209,15 @@ function updateUser($id, $nombres, $apellidos, $correo, $codigo_estudiante)
 }
 
 // Función para eliminar un usuario por ID
-function deleteUser($id)
+function deleteAdmin($data)
 {
+    validateSession();
+    if(empty($data) || !isset($data['id'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'ID es obligatorio']);
+        exit();
+    }
+    $id = $data['id'];
     global $conn;
 
     try {
@@ -214,8 +242,16 @@ function deleteUser($id)
 }
 
 // Función para obtener un usuario por ID
-function getUserById($id)
+function getUserById($data)
 {
+    validateSession();
+    
+    if (!isset($data["id"])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'ID de usuario no proporcionado']);
+        exit();
+    }
+    $id = $data["id"];
     global $conn;
 
     try {
@@ -240,11 +276,20 @@ function getUserById($id)
 }
 
 // Función para verificar usuario y contraseña admin
-function loginUser($correo, $contrasena)
+function loginAdmin($data)
 {
+    if(empty($data) || !isset($data['correo']) || !isset($data['contrasena'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Correo y contraseña son obligatorios']);
+        exit();
+    }
+    $correo = $data['correo'];
+    $contrasena = $data['contrasena'];
     global $conn;
 
     try {
+        $correo = $data['correo'];
+        $contrasena = $data['contrasena'];
         $sql = "SELECT idAdmin, nombres, apellidos, correo, codigo_admin, contrasena, edad, sexo FROM administrador WHERE correo = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $correo);
@@ -277,139 +322,3 @@ function logoutUser()
     echo json_encode(['message' => 'Sesión cerrada']);
     exit();
 }
-
-// Verificar si la solicitud es un método GET
-try {
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-
-        // --- VERIFICACIÓN DE SESIÓN PARA EL AUTHGUARD ---
-        if (isset($_GET['checkSession'])) {
-            if (isset($_SESSION['idAdmin'])) {
-                echo json_encode(['active' => true]);
-            } else {
-                http_response_code(401);
-                echo json_encode(['error' => 'Sesión expirada']);
-            }
-            exit();
-        }
-
-        // PROTECCIÓN: Solo permite acceso si hay sesión, excepto para endpoints públicos
-        if (
-            !(
-                isset($_GET['action']) && ($_GET['action'] === 'login' || $_GET['action'] === 'registro')
-            )
-        ) {
-            if (!isset($_SESSION['idAdmin'])) {
-                http_response_code(401);
-                echo json_encode(['error' => 'Sesión expirada']);
-                exit();
-            }
-        }
-
-        if (isset($_GET['id'])) {
-            echo getUserById($_GET['id']);
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'reportes') {
-            reportes();
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'salidas') {
-            reportesSalida();
-        } else {
-            echo getAllUsers();
-        }
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $data = json_decode(file_get_contents("php://input"), true);
-
-        // LOGIN (público)
-        if (isset($data['action']) && $data['action'] === 'login') {
-            if (empty($data['correo']) || empty($data['contrasena'])) {
-                http_response_code(400);
-                echo json_encode(['error' => 'Correo y contraseña son obligatorios']);
-                exit();
-            }
-            echo loginUser($data['correo'], $data['contrasena']);
-            exit();
-        }
-        // LOGOUT (público)
-        if (isset($data['action']) && $data['action'] === 'logout') {
-            logoutUser();
-            exit();
-        }
-        // REGISTRO ADMIN (público)
-        if (
-            isset($data['nombres']) &&
-            isset($data['apellidos']) &&
-            isset($data['correo']) &&
-            isset($data['codigo_admin']) &&
-            isset($data['contrasena']) &&
-            isset($data['edad']) &&
-            isset($data['sexo'])
-        ) {
-            // ...validaciones...
-            if (
-                empty($data['nombres']) ||
-                empty($data['apellidos']) ||
-                empty($data['correo']) ||
-                empty($data['codigo_admin']) ||
-                empty($data['contrasena']) ||
-                empty($data['edad']) ||
-                empty($data['sexo'])
-            ) {
-                http_response_code(400);
-                echo json_encode(['error' => 'Todos los campos son obligatorios']);
-                exit();
-            }
-            if (!preg_match('/@ucvvirtual\.edu\.pe$/', $data['correo'])) {
-                http_response_code(400);
-                echo json_encode(['error' => 'El correo debe ser de la universidad']);
-                exit();
-            }
-            if (strlen($data['contrasena']) < 6) {
-                http_response_code(400);
-                echo json_encode(['error' => 'La contraseña debe tener al menos 6 caracteres']);
-                exit();
-            }
-            echo createAdmin($data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_admin'], $data['contrasena'], $data['edad'], $data['sexo']);
-            exit();
-        }
-
-        // PROTECCIÓN: Todo lo demás requiere sesión
-        if (!isset($_SESSION['idAdmin'])) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Sesión expirada']);
-            exit();
-        }
-
-        // Aquí van las acciones protegidas por POST (actualizar, eliminar, etc.)
-        // ...
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-        // PROTECCIÓN: Solo permite acceso si hay sesión
-        if (!isset($_SESSION['idAdmin'])) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Sesión expirada']);
-            exit();
-        }
-        $data = json_decode(file_get_contents("php://input"), true);
-        if (isset($data['id'])) {
-            echo updateUser($data['id'], $data['nombres'], $data['apellidos'], $data['correo'], $data['codigo_estudiante']);
-        } else {
-            echo json_encode(array("error" => "ID de usuario no especificado para actualizar"));
-        }
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-        // PROTECCIÓN: Solo permite acceso si hay sesión
-        if (!isset($_SESSION['idAdmin'])) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Sesión expirada']);
-            exit();
-        }
-        $data = json_decode(file_get_contents("php://input"), true);
-        if (isset($data['id'])) {
-            echo deleteUser($data['id']);
-        } else {
-            echo json_encode(array("error" => "ID de usuario no especificado para eliminar"));
-        }
-    }
-    } catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(array("error" => $e->getMessage()));
-}
-
-$conn->close();

@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class EnvioCorreoService {
-  private apiUrl = environment.correoApiUrl; // URL de tu API
+  private apiUrl = environment.apiUrl; // URL de tu API
   public currentUser: any= null; 
 
   constructor(private http: HttpClient, private navCtrl: NavController) { } 

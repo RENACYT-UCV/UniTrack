@@ -17,15 +17,8 @@ email: string = '';
   }
 
   sendVerificationCode() {
-    this.userService.sendVerificationCode(this.email).subscribe(
-      response => {
-        this.navCtrl.navigateForward('/verificar');
-      },
-      error => {
-        console.error(error);
-        // Manejo de errores
-      }
-    );
+    this.userService.sendVerificationCode(this.email);
+    this.router.navigate(['/verificar']);
   }
 
 }
